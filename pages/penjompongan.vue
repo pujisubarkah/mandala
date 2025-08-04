@@ -54,6 +54,164 @@
         </div>
       </div>
 
+      <!-- Quick Stats Overview -->
+      <div class="stats shadow mb-8 w-full bg-white">
+        <div class="stat">
+          <div class="stat-figure text-primary">
+            <i class="fa-solid fa-users text-3xl"></i>
+          </div>
+          <div class="stat-title">Total Users</div>
+          <div class="stat-value text-primary">{{ users.length }}</div>
+          <div class="stat-desc">Pengguna terdaftar</div>
+        </div>
+        
+        <div class="stat">
+          <div class="stat-figure text-secondary">
+            <i class="fa-solid fa-user-shield text-3xl"></i>
+          </div>
+          <div class="stat-title">Admin</div>
+          <div class="stat-value text-secondary">{{ getRoleCount('admin') }}</div>
+          <div class="stat-desc">{{ getPercentage('admin') }}% dari total</div>
+        </div>
+        
+        <div class="stat">
+          <div class="stat-figure text-accent">
+            <i class="fa-solid fa-user-tie text-3xl"></i>
+          </div>
+          <div class="stat-title">Manager</div>
+          <div class="stat-value text-accent">{{ getRoleCount('manager') }}</div>
+          <div class="stat-desc">{{ getPercentage('manager') }}% dari total</div>
+        </div>
+        
+        <div class="stat">
+          <div class="stat-figure text-info">
+            <i class="fa-solid fa-user text-3xl"></i>
+          </div>
+          <div class="stat-title">Regular User</div>
+          <div class="stat-value text-info">{{ getRoleCount('user') }}</div>
+          <div class="stat-desc">{{ getPercentage('user') }}% dari total</div>
+        </div>
+      </div>
+
+      <!-- Statistics & Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        <!-- Role Distribution Chart -->
+        <div class="card bg-white shadow-xl">
+          <div class="card-body">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+              <i class="fa-solid fa-chart-pie mr-2"></i>
+              Distribusi Role Pengguna
+            </h3>
+            <div class="flex justify-center">
+              <div class="radial-progress-container">
+                <div class="grid grid-cols-1 gap-4">
+                  <div class="stat">
+                    <div class="stat-figure text-primary">
+                      <div class="radial-progress text-primary" :style="`--value:${getPercentage('admin')};`" role="progressbar">
+                        {{ getRoleCount('admin') }}
+                      </div>
+                    </div>
+                    <div class="stat-title">Admin</div>
+                    <div class="stat-value text-primary">{{ getRoleCount('admin') }}</div>
+                    <div class="stat-desc">{{ getPercentage('admin') }}% dari total</div>
+                  </div>
+                  
+                  <div class="stat">
+                    <div class="stat-figure text-secondary">
+                      <div class="radial-progress text-secondary" :style="`--value:${getPercentage('user')};`" role="progressbar">
+                        {{ getRoleCount('user') }}
+                      </div>
+                    </div>
+                    <div class="stat-title">User</div>
+                    <div class="stat-value text-secondary">{{ getRoleCount('user') }}</div>
+                    <div class="stat-desc">{{ getPercentage('user') }}% dari total</div>
+                  </div>
+                  
+                  <div class="stat">
+                    <div class="stat-figure text-accent">
+                      <div class="radial-progress text-accent" :style="`--value:${getPercentage('manager')};`" role="progressbar">
+                        {{ getRoleCount('manager') }}
+                      </div>
+                    </div>
+                    <div class="stat-title">Manager</div>
+                    <div class="stat-value text-accent">{{ getRoleCount('manager') }}</div>
+                    <div class="stat-desc">{{ getPercentage('manager') }}% dari total</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Growth Chart -->
+        <div class="card bg-white shadow-xl">
+          <div class="card-body">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+              <i class="fa-solid fa-chart-line mr-2"></i>
+              Statistik Pengguna
+            </h3>
+            <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
+              <div class="stat">
+                <div class="stat-figure text-primary">
+                  <i class="fa-solid fa-users text-2xl"></i>
+                </div>
+                <div class="stat-title">Total Pengguna</div>
+                <div class="stat-value text-primary">{{ users.length }}</div>
+                <div class="stat-desc">Terdaftar dalam sistem</div>
+              </div>
+              
+              <div class="stat">
+                <div class="stat-figure text-secondary">
+                  <i class="fa-solid fa-user-check text-2xl"></i>
+                </div>
+                <div class="stat-title">Pengguna Aktif</div>
+                <div class="stat-value text-secondary">{{ users.length }}</div>
+                <div class="stat-desc">↗︎ 100% aktif</div>
+              </div>
+              
+              <div class="stat">
+                <div class="stat-figure text-accent">
+                  <i class="fa-solid fa-crown text-2xl"></i>
+                </div>
+                <div class="stat-title">Admin</div>
+                <div class="stat-value text-accent">{{ getRoleCount('admin') }}</div>
+                <div class="stat-desc">Role tertinggi</div>
+              </div>
+            </div>
+
+            <!-- Bar Chart Representation -->
+            <div class="mt-6">
+              <h4 class="font-semibold mb-3">Role Distribution</h4>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <span class="w-16 text-sm">Admin</span>
+                  <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div class="bg-primary h-full rounded-full transition-all duration-500" :style="`width: ${getPercentage('admin')}%`"></div>
+                  </div>
+                  <span class="text-sm font-medium">{{ getRoleCount('admin') }}</span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                  <span class="w-16 text-sm">User</span>
+                  <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div class="bg-secondary h-full rounded-full transition-all duration-500" :style="`width: ${getPercentage('user')}%`"></div>
+                  </div>
+                  <span class="text-sm font-medium">{{ getRoleCount('user') }}</span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                  <span class="w-16 text-sm">Manager</span>
+                  <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div class="bg-accent h-full rounded-full transition-all duration-500" :style="`width: ${getPercentage('manager')}%`"></div>
+                  </div>
+                  <span class="text-sm font-medium">{{ getRoleCount('manager') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Data Table Section -->
       <div class="card bg-white shadow-xl mb-8">
         <div class="card-body">
@@ -469,6 +627,34 @@ function getRoleText(roleId) {
   }
 }
 
+// Chart helper functions
+function getRoleCount(roleType) {
+  if (!users.value.length) return 0
+  
+  let roleId
+  switch (roleType) {
+    case 'admin':
+      roleId = 1
+      break
+    case 'user':
+      roleId = 2
+      break
+    case 'manager':
+      roleId = 3
+      break
+    default:
+      return 0
+  }
+  
+  return users.value.filter(user => user.role_id === roleId).length
+}
+
+function getPercentage(roleType) {
+  if (!users.value.length) return 0
+  const count = getRoleCount(roleType)
+  return Math.round((count / users.value.length) * 100)
+}
+
 // Action handlers
 function viewUser(user) {
   alert(`Melihat detail user: ${user.nama}`)
@@ -670,5 +856,28 @@ onMounted(() => {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes countUp {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.stat-value {
+  animation: countUp 0.6s ease-out;
+}
+
+.radial-progress {
+  --size: 4rem;
+  --thickness: 4px;
+}
+
+.chart-bar {
+  transition: width 1s ease-in-out;
+}
+
+.chart-bar:hover {
+  transform: scaleY(1.05);
+  transition: transform 0.2s ease;
 }
 </style>
