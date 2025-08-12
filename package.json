@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "daisyui": "^5.0.47",
     "drizzle-orm": "^0.44.3",
     "nuxt": "^4.0.1",

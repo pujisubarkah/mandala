@@ -178,15 +178,22 @@ async function handleLogin() {
   isLoading.value = true;
   errorMessage.value = '';
   try {
-    // Simulasi login
-    // Ganti dengan API login asli jika tersedia
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    // Dummy user
-    const user = { role_id: 2 };
+    // Ganti URL di bawah ini dengan endpoint login API Anda
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username.value, password: password.value })
+    });
+    if (!response.ok) {
+      throw new Error('Login gagal');
+    }
+    const user = await response.json();
     if (user.role_id === 1) {
       router.push('/admin/home');
     } else if (user.role_id === 2) {
       router.push('/user/home');
+    } else if (user.role_id === 3) {
+      router.push('/admin_uji/home');
     } else {
       errorMessage.value = 'Peran tidak dikenali';
     }

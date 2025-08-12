@@ -1,16 +1,36 @@
-
 <template>
-  <div>
-    <NuxtLink to="/admin_uji/calendar" class="btn btn-outline mb-6">Pilih Tanggal Jadwal Ujikom</NuxtLink>
-    <div class="mb-4 text-lg font-semibold">
-      Tanggal Jadwal: <span class="badge badge-primary text-base">{{ tanggalJadwal }}</span>
-    </div>
-    <button v-if="!showForm" class="btn btn-primary mb-8" @click="showForm = true">Input Jadwal</button>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100 py-8 px-2 md:px-8 animate-fadein">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="bg-blue-600 text-white rounded-full p-4 shadow-lg animate-bounce">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-blue-700 mb-1 tracking-tight">Dashboard Admin Uji Kompetensi</h1>
+          <p class="text-gray-600 text-lg">Kelola jadwal dan penilaian ujian kompetensi dengan mudah dan cepat.</p>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <NuxtLink to="/admin_uji/calendar" class="btn btn-outline btn-info shadow">📅 Pilih Tanggal Jadwal Ujikom</NuxtLink>
+        <div class="text-lg font-semibold">
+          Tanggal Jadwal: <span class="badge badge-primary text-base">{{ tanggalJadwal }}</span>
+        </div>
+      </div>
+      <transition name="fade">
+        <button v-if="!showForm" class="btn btn-primary mb-8 w-full md:w-auto shadow-md" @click="showForm = true">
+          <span class="mr-2">➕</span> Input Jadwal
+        </button>
+      </transition>
     <teleport to="body">
       <div v-if="showForm" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 overflow-auto" style="pointer-events: auto;">
-        <form @submit.prevent="addRow" class="bg-white rounded-xl shadow-2xl max-w-3xl w-full p-8 relative animate-fadein" style="pointer-events: auto;">
+        <form @submit.prevent="addRow" class="bg-white rounded-xl shadow-2xl max-w-3xl w-full p-8 relative animate-fadein border-2 border-blue-100" style="pointer-events: auto;">
           <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" @click="showForm = false">✕</button>
-          <h2 class="text-2xl font-bold mb-4">Input Jadwal Uji Kompetensi</h2>
+          <h2 class="text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
+            <span>📝</span> Input Jadwal Uji Kompetensi
+          </h2>
           <div class="grid grid-cols-1 gap-4">
             <div class="space-y-4">
               <div class="flex items-center gap-4">
@@ -19,11 +39,17 @@
               </div>
               <div class="flex items-center gap-4">
                 <label class="w-48 text-right font-semibold">Instansi</label>
-                <input v-model="form.instansi" class="input input-bordered w-full max-w-xl" required />
+                <select v-model="form.instansi" class="input input-bordered w-full max-w-xl" required>
+                  <option value="" disabled>Pilih Instansi</option>
+                  <option v-for="i in instansiList" :key="i.id" :value="i.nama_instansi">{{ i.nama_instansi }}</option>
+                </select>
               </div>
               <div class="flex items-center gap-4">
                 <label class="w-48 text-right font-semibold">Pangkat/Golongan</label>
-                <input v-model="form.pangkat" class="input input-bordered w-full max-w-xl" required />
+                <select v-model="form.pangkat" class="input input-bordered w-full max-w-xl" required>
+                  <option value="" disabled>Pilih Golongan</option>
+                  <option v-for="g in golonganList" :key="g.id" :value="g.golongan">{{ g.golongan }}</option>
+                </select>
               </div>
               <div class="flex items-center gap-4">
                 <label class="w-48 text-right font-semibold">Mekanisme</label>
@@ -38,12 +64,20 @@
                 <input v-model="form.ruangan" class="input input-bordered w-full max-w-xl" required />
               </div>
               <div class="flex items-center gap-4">
-                <label class="w-48 text-right font-semibold">Tim Penguji</label>
-                <input v-model="form.penguji" class="input input-bordered w-full max-w-xl" required />
+                <label class="w-48 text-right font-semibold">Tim Penguji 1</label>
+                <input v-model="form.penguji1" class="input input-bordered w-full max-w-xl" required />
               </div>
               <div class="flex items-center gap-4">
-                <label class="w-48 text-right font-semibold">Pendamping</label>
-                <input v-model="form.pendamping" class="input input-bordered w-full max-w-xl" required />
+                <label class="w-48 text-right font-semibold">Tim Penguji 2</label>
+                <input v-model="form.penguji2" class="input input-bordered w-full max-w-xl" required />
+              </div>
+              <div class="flex items-center gap-4">
+                <label class="w-48 text-right font-semibold">Pendamping 1</label>
+                <input v-model="form.pendamping1" class="input input-bordered w-full max-w-xl" required />
+              </div>
+              <div class="flex items-center gap-4">
+                <label class="w-48 text-right font-semibold">Pendamping 2</label>
+                <input v-model="form.pendamping2" class="input input-bordered w-full max-w-xl" required />
               </div>
             </div>
           </div>
@@ -54,7 +88,7 @@
         </form>
       </div>
     </teleport>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto rounded-xl shadow-lg bg-white/80">
       <table class="table w-full text-base">
         <thead>
           <tr>
@@ -91,8 +125,10 @@
             <td>{{ row.mekanisme }}</td>
             <td>{{ row.waktu }}</td>
             <td>{{ row.ruangan }}</td>
-            <td>{{ row.penguji }}</td>
-            <td>{{ row.pendamping }}</td>
+            <td>{{ row.penguji1 }}</td>
+            <td>{{ row.penguji2 }}</td>
+            <td>{{ row.pendamping1 }}</td>
+            <td>{{ row.pendamping2 }}</td>
             <td>
               <button type="button" class="btn btn-error btn-xs" @click="removeRow(idx)">Hapus</button>
             </td>
@@ -149,11 +185,14 @@
         </form>
       </div>
     </teleport>
-    <button class="btn btn-success w-full mt-6" :disabled="rows.length === 0 || loading" @click="submitAll">
+    <button class="btn btn-success w-full mt-6 shadow-lg" :disabled="rows.length === 0 || loading" @click="submitAll">
       <span v-if="loading" class="loading loading-spinner"></span>
-      Simpan Semua Jadwal
+      💾 Simpan Semua Jadwal
     </button>
-    <div v-if="success" class="alert alert-success mt-4">Jadwal berhasil disimpan!</div>
+    <transition name="fade">
+      <div v-if="success" class="alert alert-success mt-4 shadow">Jadwal berhasil disimpan!</div>
+    </transition>
+    </div>
   </div>
 </template>
 
@@ -167,14 +206,18 @@ const form = ref({
   mekanisme: '',
   waktu: '',
   ruangan: '',
-  penguji: '',
-  pendamping: ''
+  penguji1: '',
+  penguji2: '',
+  pendamping1: '',
+  pendamping2: ''
 })
 const rows = ref([])
 const loading = ref(false)
 const success = ref(false)
 const showForm = ref(false)
 const tanggalJadwal = ref('')
+const golonganList = ref([])
+const instansiList = ref([])
 
 // Penilaian modal state
 const showPenilaian = ref(false)
@@ -184,14 +227,33 @@ const penilaianRows = ref([
   { judul: '', jenis: '', element: '', nilai1: null, nilai2: null }
 ])
 
-onMounted(() => {
+onMounted(async () => {
   tanggalJadwal.value = localStorage.getItem('tanggalJadwal') || '-'
+  try {
+    const res = await fetch('/api/golongan')
+    const data = await res.json()
+    if (data.success && Array.isArray(data.data)) {
+      golonganList.value = data.data
+    }
+  } catch (e) {
+    golonganList.value = []
+  }
+  // Ambil data instansi
+  try {
+    const res = await fetch('/api/instansi')
+    const data = await res.json()
+    if (Array.isArray(data)) {
+      instansiList.value = data
+    }
+  } catch (e) {
+    instansiList.value = []
+  }
 })
 
 function addRow() {
-  if (!form.value.nama || !form.value.instansi || !form.value.pangkat || !form.value.mekanisme || !form.value.waktu || !form.value.ruangan || !form.value.penguji || !form.value.pendamping) return
+  if (!form.value.nama || !form.value.instansi || !form.value.pangkat || !form.value.mekanisme || !form.value.waktu || !form.value.ruangan || !form.value.penguji1 || !form.value.penguji2 || !form.value.pendamping1 || !form.value.pendamping2) return
   rows.value.push({ ...form.value })
-  form.value = { nama: '', instansi: '', pangkat: '', mekanisme: '', waktu: '', ruangan: '', penguji: '', pendamping: '' }
+  form.value = { nama: '', instansi: '', pangkat: '', mekanisme: '', waktu: '', ruangan: '', penguji1: '', penguji2: '', pendamping1: '', pendamping2: '' }
 }
 function removeRow(idx) {
   rows.value.splice(idx, 1)
@@ -238,4 +300,37 @@ function simpanPenilaian() {
   // Simpan penilaian ke backend atau rows jika perlu
   showPenilaian.value = false
 }
+// ...existing code...
 </script>
+
+<style scoped>
+.animate-fadein {
+  animation: fadein 0.7s;
+}
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.4s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>
+
+<style scoped>
+.animate-fadein {
+  animation: fadein 0.7s;
+}
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.4s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>
