@@ -3,36 +3,42 @@
    
 
     <!-- Hero Section -->
-    <section id="beranda" class="py-20 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center">
-           <div class="mx-auto mb-6 flex items-center justify-center">
-             <div class="bg-white/70 rounded-xl p-2 shadow-lg">
-               <img src="/logo.png" alt="Logo Mandala" class="w-60 aspect-square rounded-xl object-cover" />
-             </div>
-           </div>
-          <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-4">
-            Selamat Datang di
-            <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">MANDALA</span>
-           
-          </h1>
-          <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Data Elektronik Kompetensi ASN. Kelola data pegawai, pantau jenjang karir, dan analisis kinerja dalam satu platform terintegrasi.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <NuxtLink to="/login" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl">
-              <span class="text-xl">🔑</span>
-              Mulai Sekarang
-              <span class="text-xl">➡️</span>
-            </NuxtLink>
-            <NuxtLink to="/unduhan" class="inline-flex items-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105">
-              <span class="text-xl">⬇️</span>
-              Pelajari Lebih Lanjut
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
+<section id="beranda" class="py-20 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto text-center">
+  <div class="p-2 inline-block mb-6 bg-transparent">
+  <img src="/logo.png" alt="Logo Mandala" style="width: 480px; height: auto; display: block; background: transparent;" />
+</div>
+
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-4">
+      Selamat Datang di
+      <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">daTAMANDALA</span>
+    </h1>
+
+    <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+      Data Elektronik Kompetensi ASN. Kelola data pegawai, pantau jenjang karir, dan analisis kinerja dalam satu platform terintegrasi.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <NuxtLink
+        to="/login"
+        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
+      >
+        <span class="text-xl">🔑</span>
+        Mulai Sekarang
+        <span class="text-xl">➡️</span>
+      </NuxtLink>
+
+      <NuxtLink
+        to="/unduhan"
+        class="inline-flex items-center gap-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105"
+      >
+        <span class="text-xl">⬇️</span>
+        Pelajari Lebih Lanjut
+      </NuxtLink>
+    </div>
+  </div>
+</section>
+
 
     <!-- Informasi Terkini Section -->
     <section class="py-20 bg-white">
@@ -185,12 +191,49 @@
           </div>
         </div>
       </div>
-    </section>
+        <div class="text-center mt-12">
+          <NuxtLink to="/unduhan" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
+            <span class="text-lg">⬇️</span>
+            Lihat Detail Data Jenjang
+            <span class="text-lg">➡️</span>
+          </NuxtLink>
+        </div>
+      </section>
 
-   
+      <client-only>
+  <VueECharts :option="chartOptions" style="height: 400px; width: 100%" />
+</client-only>
   </div>
 </template>
 
 <script setup>
-// Tidak perlu script khusus untuk halaman ini
+import { ref, onMounted, computed } from 'vue'
+import VueECharts from 'vue-echarts'
+
+const jenjangSummary = ref([])
+
+onMounted(async () => {
+  jenjangSummary.value = await $fetch('/api/analis_kebijakan/jenjang')
+})
+
+const chartOptions = computed(() => ({
+  tooltip: { trigger: 'item' },
+  legend: { top: 'bottom' },
+  series: [
+    {
+      name: 'Total Pegawai per Jenjang',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      label: {
+        show: true,
+        formatter: '{b}: {c}',
+      },
+      data: jenjangSummary.value.map(j => ({
+        value: j.total,
+        name: j.nm_jenjang
+      }))
+    }
+  ]
+}))
 </script>

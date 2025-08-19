@@ -19,7 +19,7 @@
         <div class="relative z-10">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-2 h-8 bg-gradient-to-b from-yellow-400 to-orange-400 rounded-full"></div>
-            <h2 class="text-2xl font-bold text-gray-800">Selamat datang di MANDALA!</h2>
+            <h2 class="text-2xl font-bold text-gray-800">Selamat datang di daTAMANDALA!</h2>
           </div>
           <p class="text-gray-600 text-lg leading-relaxed">
             Kelola data, pantau analitik, dan akses fitur admin dengan mudah melalui dashboard yang intuitif.

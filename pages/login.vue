@@ -12,12 +12,12 @@
             </div>
           </div>
           <div class="mb-4">
-            <h1 class="text-5xl md:text-6xl xl:text-7xl font-black mb-2 text-blue-600 relative">MANDALA</h1>
+            <h1 class="text-5xl md:text-6xl xl:text-7xl font-black mb-2 text-blue-600 relative">daTAMANDALA</h1>
             <div class="h-1 w-32 bg-blue-600 rounded-full mx-auto"></div>
           </div>
           <p class="text-gray-600 text-lg font-medium leading-relaxed">
-            Sistem Informasi Jabatan<br />
-            <span class="text-blue-600 font-semibold">Fungsional Online</span>
+            Sistem Informasi Manajemen Data<br />
+            <span class="text-blue-600 font-semibold">Fungsional ASN Terintegrasi</span>
           </p>
         </div>
         <!-- Login Form -->

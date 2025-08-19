@@ -4,12 +4,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
-        <div class="flex items-center gap-3">
-          <img src="/logo.png" alt="Logo Mandala" class="w-[50px] h-[50px] rounded-lg border border-gray-200" />
-          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center border border-blue-300">
-            <img src="/logo.png" alt="Logo Mandala" class="w-8 h-8 object-contain" />
-          </div>
-          <span class="text-2xl font-bold text-blue-600">MANDALA</span>
+  <div class="flex items-center gap-1">
+          <img src="/logo.png" alt="Logo Mandala" class="h-16 w-auto object-contain align-middle" style="background:transparent;" />
+          <span class="text-2xl font-bold text-blue-600 align-middle">daTAMANDALA</span>
         </div>
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">

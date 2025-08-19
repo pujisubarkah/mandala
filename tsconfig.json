@@ -14,5 +14,8 @@
     {
       "path": "./.nuxt/tsconfig.node.json"
     }
-  ]
+  ],
+  "vueCompilerOptions": {
+    "globalTypesPath": "./node_modules/vue/dist/global.d.ts"
+  }
 }
