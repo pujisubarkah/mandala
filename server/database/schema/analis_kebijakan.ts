@@ -17,6 +17,6 @@ export const pegawai = pgTable('pegawai', {
   tmt_surat: date('tmt_surat'),
   unit_kerja: text('unit_kerja'),
   photo: text('photo'),
-  Jabfung_id: integer('Jabfung_id'),
+  jabfung_id: integer('jabfung_id'),
   pendidikan_id: integer('pendidikan_id'),
 });

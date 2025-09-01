@@ -11,12 +11,16 @@
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
+    "@pinia/nuxt": "0.11.2",
     "bcryptjs": "^3.0.2",
     "daisyui": "^5.0.47",
     "drizzle-orm": "^0.44.3",
-    "echarts": "^6.0.0",
+    "echarts": "^5.5.1",
+    "lucide-vue": "^0.517.0",
+    "lucide-vue-next": "^0.542.0",
     "nuxt": "^4.0.1",
     "pg": "^8.16.3",
+    "pinia": "^3.0.3",
     "vue": "^3.5.17",
     "vue-echarts": "^7.0.3",
     "vue-router": "^4.5.1"
@@ -25,5 +29,6 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@types/pg": "^8.15.4",
     "drizzle-kit": "^0.31.4"
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

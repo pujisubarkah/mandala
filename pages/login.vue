@@ -8,7 +8,7 @@
         <div class="flex flex-col items-center mb-8 text-center">
           <div class="relative group mb-6">
             <div class="relative w-28 h-28">
-              <img src="/lanri.png" alt="Logo LANRI" class="w-full h-full object-contain aspect-square rounded-lg shadow-sm hover:scale-105 transition-all duration-300 border border-gray-200 bg-white" />
+              <img src="/logo.png" alt="Logo" class="w-full h-full object-contain aspect-square rounded-lg shadow-sm hover:scale-105 transition-all duration-300 border border-gray-200 bg-white" />
             </div>
           </div>
           <div class="mb-4">
@@ -60,7 +60,7 @@
             </div>
             <button :class="['w-full py-4 px-6 rounded-lg font-bold text-lg shadow-sm transition-all duration-300 flex items-center justify-center gap-3 group relative overflow-hidden', isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-md', 'text-white']" type="submit" :disabled="isLoading">
               <span v-if="isLoading">
-                <span class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+                <LoadingSpinner size="sm" custom-class="text-white" />
                 Memproses...
               </span>
               <span v-else>
@@ -188,6 +188,7 @@ async function handleLogin() {
       throw new Error('Login gagal');
     }
     const user = await response.json();
+    localStorage.setItem('user', JSON.stringify(user));
     if (user.role_id === 1) {
       router.push('/admin/home');
     } else if (user.role_id === 2) {

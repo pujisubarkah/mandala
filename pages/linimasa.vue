@@ -17,18 +17,32 @@
 
     <!-- Video Timeline -->
     <section class="py-16 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-7xl mx-auto">
-        <div class="space-y-16">
-          <TimelineCard
-            v-for="item in timelineData"
-            :key="item.id"
-            :item="item"
-            :activeVideo="activeVideo"
-            @toggleVideo="toggleVideo"
-          />
-        </div>
-      </div>
-    </section>
+          <div class="max-w-7xl mx-auto">
+            <div class="space-y-16">
+              <TimelineCard
+                v-for="item in paginatedTimeline"
+                :key="item.id"
+                :item="item"
+                :activeVideo="activeVideo"
+                @toggleVideo="toggleVideo"
+              />
+            </div>
+            <!-- Pagination -->
+            <div class="flex justify-center items-center gap-2 mt-8">
+              <button
+                :disabled="currentPage === 1"
+                @click="currentPage--"
+                class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              >Prev</button>
+              <span class="font-semibold">Halaman {{ currentPage }} dari {{ totalPages }}</span>
+              <button
+                :disabled="currentPage === totalPages"
+                @click="currentPage++"
+                class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              >Next</button>
+            </div>
+          </div>
+        </section>
 
     <!-- Statistics Section -->
     <section class="py-16 bg-white">
@@ -73,60 +87,56 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import TimelineCard from '@/components/TimelineCard.vue'
 
+
+
 const activeVideo = ref(null)
-const timelineData = [
-  {
-    id: 1,
-    title: 'Pengenalan Sistem Fungsional',
-    subtitle: 'Video Keseluruhan - Gambaran Lengkap',
-    description: 'Video komprehensif tentang sistem fungsional yang mencakup semua aspek jabatan fungsional dalam pemerintahan Indonesia.',
-    videoId: 'o9_fcOZIUxE',
-    date: '2024',
-    category: 'Overview',
-    color: 'from-blue-600 to-blue-800',
-    bgColor: 'from-blue-50 to-blue-100',
-    icon: '🧑‍💼'
-  },
-  {
-    id: 2,
-    title: 'Analis Kebijakan',
-    subtitle: 'Jabatan Fungsional Strategis',
-    description: 'Memahami peran dan tanggung jawab Analis Kebijakan dalam merumuskan dan menganalisis kebijakan publik yang efektif.',
-    videoId: 'PZ1AuvU4fG0',
-    date: '2024',
-    category: 'Analis Kebijakan',
-    color: 'from-green-600 to-green-800',
-    bgColor: 'from-green-50 to-green-100',
-    icon: '📈'
-  },
-  {
-    id: 3,
-    title: 'Widyaiswara',
-    subtitle: 'Pendidik dan Pengembang SDM',
-    description: 'Eksplorasi mendalam tentang profesi Widyaiswara sebagai pendidik profesional dalam pengembangan kapasitas aparatur sipil negara.',
-    videoId: 'A2RXvhHGvW0',
-    date: '2024',
-    category: 'Widyaiswara',
-    color: 'from-purple-600 to-purple-800',
-    bgColor: 'from-purple-50 to-purple-100',
-    icon: '🏆'
-  },
-  {
-    id: 4,
-    title: 'Analis Bangkom',
-    subtitle: 'Spesialis Pengembangan Kompetensi',
-    description: 'Mengenal lebih dekat profesi Analis Pengembangan Kompetensi (Bangkom) dan kontribusinya dalam peningkatan SDM aparatur.',
-    videoId: 'x_NgKrSS8z4',
-    date: '2024',
-    category: 'Analis Bangkom',
-    color: 'from-orange-600 to-orange-800',
-    bgColor: 'from-orange-50 to-orange-100',
-    icon: '⏰'
+const timelineData = ref([])
+const currentPage = ref(1)
+const pageSize = 5
+const totalPages = computed(() => Math.ceil(timelineData.value.length / pageSize) || 1)
+const paginatedTimeline = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return timelineData.value.slice(start, start + pageSize)
+})
+
+async function fetchTimeline() {
+  try {
+    const res = await fetch('/api/youtube')
+    const data = await res.json()
+    timelineData.value = Array.isArray(data)
+      ? data
+          .slice() // copy array
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .map((item) => {
+            // Ekstrak videoId dari video_url YouTube
+            let videoId = ''
+            if (item.video_url) {
+              const match = item.video_url.match(/[?&]v=([^&#]+)/)
+              videoId = match ? match[1] : item.video_url
+            }
+            return {
+              id: item.id,
+              title: item.title,
+              subtitle: item.subtitle,
+              description: item.description,
+              videoId,
+              date: item.date_year || '',
+              category: item.category?.name || '',
+              color: item.color || 'from-blue-600 to-blue-800',
+              bgColor: item.bg_color || 'from-blue-50 to-blue-100',
+              icon: item.icon || '🎬',
+            }
+          })
+      : []
+  } catch (err) {
+    timelineData.value = []
   }
-]
+}
+
+fetchTimeline()
 
 function toggleVideo(videoId) {
   activeVideo.value = activeVideo.value === videoId ? null : videoId

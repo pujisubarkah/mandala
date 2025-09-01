@@ -45,7 +45,7 @@
     <section class="py-8 px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="file in filteredFiles" :key="file.id" class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 group cursor-pointer border border-gray-200" @click="openModal(file)">
+          <div v-for="file in paginatedFiles" :key="file.id" class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 group cursor-pointer border border-gray-200" @click="openModal(file)">
             <div :class="['w-16 h-16 rounded-lg flex flex-col items-center justify-center mb-4 transition-colors duration-300 relative shadow-md', file.bgColor]">
               <span class="text-white text-lg mb-1">📄</span>
               <span class="text-white text-xs font-bold">PDF</span>
@@ -70,6 +70,12 @@
               </a>
             </div>
           </div>
+        </div>
+        <!-- Pagination Controls -->
+        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 mt-8">
+          <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium disabled:opacity-50">Sebelumnya</button>
+          <span class="mx-2 text-sm">Halaman {{ currentPage }} dari {{ totalPages }}</span>
+          <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium disabled:opacity-50">Berikutnya</button>
         </div>
       </div>
     </section>
@@ -161,115 +167,65 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useHead } from 'nuxt/app';
 
-useHead({
-  title: 'Pusat Unduhan | Mandala',
-  meta: [
-    { name: 'description', content: 'Download peraturan, panduan, dan dokumentasi resmi Jabatan Fungsional Analis Kebijakan.' }
-  ]
-});
 
+import { ref, computed, watch } from 'vue';
 const searchTerm = ref('');
 const selectedCategory = ref('');
+// Reset currentPage ke 1 setiap kali filter berubah
+watch([searchTerm, selectedCategory], () => {
+  currentPage.value = 1;
+});
+
+// Menggunakan useSeoMeta untuk meta tags yang lebih aman
+useSeoMeta({
+  title: 'Pusat Unduhan | Mandala',
+  description: 'Download peraturan, panduan, dan dokumentasi resmi Jabatan Fungsional Analis Kebijakan.'
+});
+
+
 const isModalOpen = ref(false);
 const selectedFile = ref(null);
 
-const pdfFiles = [
-  {
-    id: 1,
-    title: "Peraturan Pemerintah No. 11 Tahun 2017",
-    category: "Peraturan Pemerintah",
-    description: "Tentang Manajemen Pegawai Negeri Sipil dan ketentuan pelaksanaan jabatan fungsional Analis Kebijakan",
-    fileName: "PP_11_2017_Manajemen_PNS.pdf",
-    fileSize: "2.4 MB",
-    fileCount: 1,
-    createDate: "15 Maret 2017",
-    lastModified: "22 Januari 2024",
-    downloadUrl: "/downloads/pp-11-2017.pdf",
-    tags: ["PNS", "Manajemen", "Jabatan Fungsional"],
-    bgColor: "bg-gradient-to-br from-blue-50 to-blue-100"
-  },
-  {
-    id: 2,
-    title: "Permenpan RB No. 45 Tahun 2013",
-    category: "Peraturan Menteri",
-    description: "Jabatan Fungsional Analis Kebijakan dan Angka Kreditnya - Pedoman lengkap untuk pengembangan karir AK",
-    fileName: "Permenpan_RB_45_2013_JF_Analis_Kebijakan.pdf",
-    fileSize: "1.8 MB",
-    fileCount: 1,
-    createDate: "28 November 2013",
-    lastModified: "10 Desember 2023",
-    downloadUrl: "/downloads/permenpan-45-2013.pdf",
-    tags: ["Analis Kebijakan", "Angka Kredit", "JF"],
-    bgColor: "bg-gradient-to-br from-green-50 to-green-100"
-  },
-  {
-    id: 3,
-    title: "Peraturan BKN No. 12 Tahun 2020",
-    category: "Peraturan BKN",
-    description: "Petunjuk Teknis Pelaksanaan Penilaian Angka Kredit Jabatan Fungsional Analis Kebijakan",
-    fileName: "Peraturan_BKN_12_2020_Juknis_AK.pdf",
-    fileSize: "3.2 MB",
-    fileCount: 1,
-    createDate: "18 Juni 2020",
-    lastModified: "05 Februari 2024",
-    downloadUrl: "/downloads/bkn-12-2020.pdf",
-    tags: ["BKN", "Juknis", "Penilaian"],
-    bgColor: "bg-gradient-to-br from-purple-50 to-purple-100"
-  },
-  {
-    id: 4,
-    title: "Panduan DUPAK Analis Kebijakan",
-    category: "Panduan",
-    description: "Daftar Usulan Penetapan Angka Kredit untuk Jabatan Fungsional Analis Kebijakan - Template dan contoh",
-    fileName: "Panduan_DUPAK_Analis_Kebijakan_2024.pdf",
-    fileSize: "4.1 MB",
-    fileCount: 3,
-    createDate: "12 Januari 2024",
-    lastModified: "28 Februari 2024",
-    downloadUrl: "/downloads/panduan-dupak-2024.pdf",
-    tags: ["DUPAK", "Template", "Contoh"],
-    bgColor: "bg-gradient-to-br from-orange-50 to-orange-100"
-  },
-  {
-    id: 5,
-    title: "Standar Kompetensi Analis Kebijakan",
-    category: "Standar Kompetensi",
-    description: "Kompetensi teknis, manajerial, dan sosio-kultural yang harus dimiliki oleh Analis Kebijakan",
-    fileName: "Standar_Kompetensi_AK_2023.pdf",
-    fileSize: "2.9 MB",
-    fileCount: 1,
-    createDate: "08 Agustus 2023",
-    lastModified: "15 November 2023",
-    downloadUrl: "/downloads/standar-kompetensi-ak.pdf",
-    tags: ["Kompetensi", "Standar", "Teknis"],
-    bgColor: "bg-gradient-to-br from-red-50 to-red-100"
-  },
-  {
-    id: 6,
-    title: "Kumpulan Peraturan Terkait JF-AK",
-    category: "Kompilasi",
-    description: "Kumpulan lengkap peraturan perundang-undangan yang berkaitan dengan Jabatan Fungsional Analis Kebijakan",
-    fileName: "Kompilasi_Peraturan_JF_AK_2024.pdf",
-    fileSize: "8.7 MB",
-    fileCount: 15,
-    createDate: "03 Maret 2024",
-    lastModified: "20 Maret 2024",
-    downloadUrl: "/downloads/kompilasi-peraturan-ak.pdf",
-    tags: ["Kompilasi", "Lengkap", "Perundangan"],
-    bgColor: "bg-gradient-to-br from-indigo-50 to-indigo-100"
-  }
-];
+const pdfFiles = ref([]);
+const currentPage = ref(1);
+const pageSize = 6;
+
+async function fetchDownloads() {
+  const res = await fetch('/api/download');
+  const data = await res.json();
+  pdfFiles.value = Array.isArray(data)
+    ? data.map(item => ({
+        id: item.id,
+        title: item.title,
+        category: item.category?.name || '',
+        description: item.description,
+        fileName: item.file_name,
+        fileSize: item.file_size,
+        fileCount: item.file_count,
+        createDate: item.create_date,
+        lastModified: item.last_modified,
+        downloadUrl: item.download_url,
+        tags: Array.isArray(item.tags) ? item.tags.map(t => t.tag) : [],
+        bgColor: item.bg_color || (item.category?.bg_color ? `bg-gradient-to-br ${item.category.bg_color}` : '')
+      }))
+      .sort((a, b) => {
+        const dateA = new Date(a.lastModified || a.createDate);
+        const dateB = new Date(b.lastModified || b.createDate);
+        return dateB - dateA;
+      })
+    : [];
+}
+
+fetchDownloads();
 
 const categories = computed(() => {
-  const cats = pdfFiles.map(f => f.category);
+  const cats = pdfFiles.value.map(f => f.category);
   return Array.from(new Set(cats));
 });
 
 const filteredFiles = computed(() => {
-  return pdfFiles.filter(file => {
+  return pdfFiles.value.filter(file => {
     const matchesSearch = file.title.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
       file.description.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
       file.tags.some(tag => tag.toLowerCase().includes(searchTerm.value.toLowerCase()));
@@ -278,7 +234,20 @@ const filteredFiles = computed(() => {
   });
 });
 
-const totalFileCount = computed(() => pdfFiles.reduce((sum, file) => sum + file.fileCount, 0));
+const totalPages = computed(() => Math.ceil(filteredFiles.value.length / pageSize));
+
+const paginatedFiles = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return filteredFiles.value.slice(start, start + pageSize);
+});
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+}
+
+const totalFileCount = computed(() => pdfFiles.value.reduce((sum, file) => sum + file.fileCount, 0));
 
 function openModal(file) {
   selectedFile.value = file;

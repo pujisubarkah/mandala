@@ -82,7 +82,7 @@
             </div>
           </div>
           <button class="btn btn-primary w-full mt-4" :disabled="loading">
-            <span v-if="loading" class="loading loading-spinner"></span>
+            <LoadingSpinner v-if="loading" size="sm" />
             Tambah
           </button>
         </form>
@@ -186,7 +186,7 @@
       </div>
     </teleport>
     <button class="btn btn-success w-full mt-6 shadow-lg" :disabled="rows.length === 0 || loading" @click="submitAll">
-      <span v-if="loading" class="loading loading-spinner"></span>
+      <LoadingSpinner v-if="loading" size="sm" />
       💾 Simpan Semua Jadwal
     </button>
     <transition name="fade">

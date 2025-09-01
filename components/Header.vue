@@ -6,12 +6,13 @@
     <!-- Left Section - Logo -->
     <div class="flex items-center gap-4 relative z-10">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md hover:scale-105 transition-transform duration-300">
-          <span class="text-xl font-black text-white">F</span>
-        </div>
+     
+        <img src="/lanri.png" alt="LAN RI" class="h-8 w-auto object-contain" style="background:transparent;" />
+        <img src="/berakhlak.png" alt="BerAKHLAK" class="h-8 w-auto object-contain" style="background:transparent;" />
+        <img src="/bangga.png" alt="Bangga Melayani Bangsa" class="h-8 w-auto object-contain" style="background:transparent;" />
         <div class="flex flex-col">
-          <span class="text-xl font-black text-blue-600">MANDALA</span>
-          <span class="text-xs text-blue-500 font-medium -mt-1">Admin Panel</span>
+          <span class="text-xl font-extrabold text-blue-700 tracking-tight">daTAMandala</span>
+          <span class="text-xs text-blue-500 font-medium -mt-1">Sistem Platform NIAKN</span>
         </div>
       </div>
       <div class="hidden md:block w-px h-8 bg-gray-300 mx-2"></div>
@@ -47,46 +48,29 @@
           </div>
           <span :class="['text-gray-600 transition-transform duration-300', showDropdown ? 'rotate-180' : '']">▼</span>
         </button>
-        <!-- Dropdown Menu -->
-        <div v-if="showDropdown" class="absolute top-full right-0 mt-2 w-56 bg-white backdrop-blur-lg rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[200]">
-          <div class="p-4 bg-[#C2E7F6]/30 border-b border-gray-200">
-            <p class="font-semibold text-gray-800">{{ nama }}</p>
-            <p class="text-sm text-gray-600">admin@mandala.com</p>
+        <!-- Dropdown Menu dengan teleport -->
+        <teleport to="body">
+          <div v-if="showDropdown" class="fixed top-20 right-8 w-56 bg-white backdrop-blur-lg rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[9999]">
+            <div class="p-2">
+              <div 
+                role="button"
+                class="group w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors duration-200"
+                @mousedown.stop
+                @click.stop="handleLogout"
+                tabindex="0"
+                style="pointer-events:auto; user-select:none;"
+                :aria-disabled="isLoggingOut"
+              >
+                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors duration-200">
+                  <span class="text-red-600 text-sm">🚪</span>
+                </div>
+                <span class="text-gray-700 font-medium">
+                  {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="p-2">
-            <button class="group w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors duration-200">
-              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
-                <span class="text-blue-600 text-sm">👤</span>
-              </div>
-              <span class="text-gray-700 font-medium">Profile Settings</span>
-            </button>
-            <button class="group w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-50 transition-colors duration-200">
-              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-200">
-                <span class="text-purple-600 text-sm">⚙️</span>
-              </div>
-              <span class="text-gray-700 font-medium">System Settings</span>
-            </button>
-            <NuxtLink to="/" class="group w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-green-50 transition-colors duration-200">
-              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors duration-200">
-                <span class="text-green-600 text-sm">🏠</span>
-              </div>
-              <span class="text-gray-700 font-medium">Test Home</span>
-            </NuxtLink>
-            <div class="border-t border-gray-200 my-2"></div>
-            <button 
-              class="group w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors duration-200 disabled:opacity-50"
-              @click="handleLogout"
-              :disabled="isLoggingOut"
-            >
-              <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors duration-200">
-                <span class="text-red-600 text-sm">🚪</span>
-              </div>
-              <span class="text-gray-700 font-medium">
-                {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
-              </span>
-            </button>
-          </div>
-        </div>
+        </teleport>
       </div>
     </div>
     <!-- Click outside to close dropdown -->
@@ -112,7 +96,7 @@ function handleLogout() {
     localStorage.removeItem('token');
     localStorage.removeItem('authToken');
     showDropdown.value = false;
-    router.push('/');
+    window.location.href = '/';
   } catch (error) {
     isLoggingOut.value = false;
     window.alert('Terjadi kesalahan saat logout. Silakan coba lagi.');

@@ -1,0 +1,22 @@
+import { pgTable, integer, text, date } from 'drizzle-orm/pg-core'
+
+export const pegawai = pgTable('pegawai', {
+  id: integer('id').primaryKey(),
+  nip: text('nip'),
+  niakn: text('niakn'),
+  nama: text('nama'),
+  jns_kelamin_id: integer('jns_kelamin_id'),
+  golongan_id: integer('golongan_id'),
+  jalur_id: integer('jalur_id'),
+  jenjang_id: integer('jenjang_id'),
+  instansi_id: integer('instansi_id'),
+  phone: text('phone'),
+  email: text('email'),
+  nomor_surat: text('nomor_surat'),
+  tmt_pangkat: date('tmt_pangkat'),
+  tmt_surat: date('tmt_surat'),
+  unit_kerja: text('unit_kerja'),
+  photo: text('photo'),
+  jabfung_id: integer('jabfung_id'),
+  pendidikan_id: integer('pendidikan_id'),
+})

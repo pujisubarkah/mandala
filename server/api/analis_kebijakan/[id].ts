@@ -1,5 +1,6 @@
 import { db } from '@/server/database';
-import { pegawai } from '@/server/database/schema/analis_kebijakan';
+import { pegawai } from '@/server/database/schema/pegawai'; // Pastikan schema ini menggunakan field lowercase jabfung_id
+import { jabfung } from '@/server/database/schema/jabfung';
 import { jns_kelamin } from '@/server/database/schema/jns_kelamin';
 import { golongan } from '@/server/database/schema/golongan';
 import { jalur } from '@/server/database/schema/jalur';
@@ -30,6 +31,7 @@ export default defineEventHandler(async (event) => {
           nm_jenjang: jenjang.nm_jenjang,
           nama_instansi: instansi.nama_instansi,
           pendidikan: pendidikan.pendidikan,
+          jabfung: jabfung.fungsional,
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -38,6 +40,7 @@ export default defineEventHandler(async (event) => {
         .leftJoin(jenjang, eq(pegawai.jenjang_id, jenjang.id))
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
+        .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
         .where(eq(pegawai.id, Number(id)));
 
       if (!result.length) {
@@ -46,7 +49,11 @@ export default defineEventHandler(async (event) => {
       const p = result[0];
       return {
         ...p,
-        photo: `https://dtjrketxxozstcwvotzh.supabase.co/storage/v1/object/public/foto_pegawai/${p.nip}.jpg`
+        nm_jenjang: p.nm_jenjang || '-',
+        nama_instansi: p.nama_instansi || '-',
+        pendidikan: p.pendidikan || '-',
+        jabfung: p.jabfung || '-',
+        photo: p.nip ? `https://dtjrketxxozstcwvotzh.supabase.co/storage/v1/object/public/foto_pegawai/${p.nip}.jpg` : null,
       };
     } catch (err) {
       return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal mengambil data' }));

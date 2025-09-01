@@ -3,6 +3,7 @@ import { instansi } from '@/server/database/schema/instansi';
 import { eq } from 'drizzle-orm';
 import type { H3Event } from 'h3';
 import { readBody } from 'h3';
+import { defineEventHandler } from 'h3';
 
 export default defineEventHandler(async (event: H3Event) => {
   const method = event.node.req.method;

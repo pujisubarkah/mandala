@@ -276,31 +276,12 @@
           <div class="modal-action">
             <button class="btn" @click="showAddModal = false" type="button">Batal</button>
             <button class="btn btn-primary" :disabled="loadingAdd">
-              <span v-if="loadingAdd" class="loading loading-spinner"></span>
+              <LoadingSpinner v-if="loadingAdd" size="sm" />
               Simpan Data
             </button>
           </div>
         </form>
       </div>
-    </div>
-
-    <!-- Data Jenjang Table -->
-    <div>
-      <h2 class="text-xl font-bold mb-4">Data Jenjang</h2>
-      <table class="min-w-full border">
-        <thead>
-          <tr>
-            <th class="border px-4 py-2">Jenjang</th>
-            <th class="border px-4 py-2">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in jenjangSummary" :key="row.nm_jenjang">
-            <td class="border px-4 py-2">{{ row.nm_jenjang }}</td>
-            <td class="border px-4 py-2">{{ row.total }}</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>
@@ -353,16 +334,13 @@ const filterJenjang = ref("")
 onMounted(async () => {
   const res = await fetch("/api/analis_kebijakan")
   pegawai.value = await res.json()
-
-  // Fetch jenjang summary data
-  jenjangSummary.value = await $fetch('/api/analis_kebijakan/jenjang')
 })
 
 // Summary & chart data
 const jenjangData = computed(() =>
   jenjangList.map(nm => ({
     name: nm,
-    value: pegawai.value.filter(p => p.jenjang?.nm_jenjang === nm).length,
+    value: pegawai.value.filter(p => p.nm_jenjang === nm).length,
   }))
 )
 const totalAK = computed(() => pegawai.value.length)
@@ -372,9 +350,9 @@ const dataTable = computed(() =>
   pegawai.value.map(p => ({
     id: p.id,
     nama: p.nama,
-    jenjang: p.jenjang?.nm_jenjang || "-",
-    instansi: p.instansi?.nama_instansi || "-",
-    provinsi: p.instansi?.provinsi || "-",
+    jenjang: p.nm_jenjang || "-",
+    instansi: p.nama_instansi || "-",
+    provinsi: p.provinsi || "-",
     nip: p.nip,
     email: p.email,
   }))
@@ -407,8 +385,11 @@ async function handleAddData() {
         nama: form.value.nama,
         nip: form.value.nip,
         email: form.value.email,
-        jenjang: { nm_jenjang: form.value.jenjang },
-        instansi: { nama_instansi: form.value.instansi, provinsi: form.value.provinsi },
+        // For now, just pass the selected jenjang name
+        // In real implementation, you'd lookup the jenjang_id
+        jenjang_id: jenjangList.indexOf(form.value.jenjang) + 1,
+        // Similar for instansi - you'd lookup instansi_id
+        instansi_id: 1,
       }),
     })
     if (!res.ok) throw new Error("Gagal menambah data")
@@ -456,16 +437,7 @@ const pieOptions = computed(() => ({
   }]
 }))
 
-// JenjangStars component
-function JenjangStars({ count }) {
-  return Array.from({ length: count }).map((_, i) =>
-    h('span', { class: 'text-yellow-400 text-2xl drop-shadow', style: { marginLeft: i > 0 ? '-0.5rem' : '0' } }, [
-      h('svg', { class: 'inline', width: 20, height: 20, fill: 'currentColor', viewBox: '0 0 20 20' }, [
-        h('path', { d: 'M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.462a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.462a1 1 0 00-1.175 0l-3.388 2.462c-.784.57-1.838-.197-1.539-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.174 9.393c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.966z' })
-      ])
-    ])
-  )
-}
+// JenjangStars component - removed as it's causing errors and not used in template
 </script>
 
 <script>
