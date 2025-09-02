@@ -10,7 +10,7 @@
             <img src="/lanri.png" alt="LAN RI" class="h-10 w-auto object-contain" />
             <img src="/berakhlak.png" alt="BerAKHLAK" class="h-10 w-auto object-contain" />
             <img src="/bangga.png" alt="Bangga Melayani Bangsa" class="h-10 w-auto object-contain" />
-            <img src="/logo.png" alt="Mandala" class="h-10 w-auto object-contain" />
+            
           </div>
           <span class="text-xl font-extrabold text-blue-700 tracking-tight">daTAMANDALA</span>
         </div>

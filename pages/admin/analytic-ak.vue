@@ -139,8 +139,4 @@ const pieOptions = computed(() => ({
     label: { formatter: '{b}: {d}%' }
   }]
 }))
- </script>
-
-<script>
-definePageMeta({ layout: 'admin' })
 </script>

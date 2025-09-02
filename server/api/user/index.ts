@@ -1,9 +1,12 @@
 import { defineEventHandler, readBody, getQuery, createError } from 'h3'
 import { db } from '~/server/database'
 import { users } from '~/server/database/schema/user'
+import { instansi } from '~/server/database/schema/instansi'
+import { roles } from '~/server/database/schema/role'
 import { eq } from 'drizzle-orm'
 
-export default defineEventHandler(async (event) => {
+
+async function handler(event: any) {
   const method = getMethod(event)
 
   try {
@@ -29,7 +32,9 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Internal Server Error'
     })
   }
-})
+}
+
+export default defineEventHandler(handler)
 
 // GET - Ambil semua users atau user berdasarkan ID
 async function getUsers(event: any) {
@@ -47,8 +52,23 @@ async function getUsers(event: any) {
     }
     return { data: user[0] }
   } else {
-    // Ambil semua users
-    const allUsers = await db.select().from(users)
+    // Ambil semua users dengan join ke instansi dan role
+    const allUsers = await db
+      .select({
+        id: users.id,
+        username: users.username,
+        nama: users.nama,
+        email: users.email,
+        role_id: users.role_id,
+        role_nama: roles.role_nama,
+        instansi_id: users.instansi_id,
+        nama_instansi: instansi.nama_instansi,
+        createdAt: users.createdAt
+      })
+      .from(users)
+      .leftJoin(instansi, eq(users.instansi_id, instansi.id))
+      .leftJoin(roles, eq(users.role_id, roles.role_id));
+
     return { data: allUsers }
   }
 }
@@ -56,7 +76,7 @@ async function getUsers(event: any) {
 // POST - Buat user baru
 async function createUser(event: any) {
   const body = await readBody(event)
-  
+
   // Validasi required fields
   if (!body.username || !body.nama || !body.email || !body.password || !body.role_id) {
     throw createError({
@@ -65,13 +85,16 @@ async function createUser(event: any) {
     })
   }
 
-  // Insert user baru
+  // Hash password sebelum insert
+  const bcrypt = await import('bcryptjs')
+  const hashedPassword = bcrypt.hashSync(body.password, 10)
   const newUser = await db.insert(users).values({
     role_id: body.role_id,
     username: body.username,
     nama: body.nama,
     email: body.email,
-    password: body.password // Note: Sebaiknya di-hash dulu
+    password: hashedPassword,
+    instansi_id: body.instansi_id // pastikan body.instansi_id ada dan valid
   }).returning()
 
   return { 

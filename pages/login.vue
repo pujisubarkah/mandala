@@ -119,6 +119,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '~/store/user'; // pastikan store/user.js/ts ada
 
 const username = ref('');
 const password = ref('');
@@ -188,15 +189,26 @@ async function handleLogin() {
       throw new Error('Login gagal');
     }
     const user = await response.json();
-    localStorage.setItem('user', JSON.stringify(user));
-    if (user.role_id === 1) {
-      router.push('/admin/home');
-    } else if (user.role_id === 2) {
-      router.push('/user/home');
-    } else if (user.role_id === 3) {
-      router.push('/admin_uji/home');
-    } else {
-      errorMessage.value = 'Peran tidak dikenali';
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(user));
+      // Simpan instansi_id jika role_id 4
+      if (user.role_id == 4) {
+        localStorage.setItem('instansi_id', user.instansi_id);
+        try {
+          const userStore = useUserStore();
+          userStore.setInstansiId(user.instansi_id);
+          userStore.setUsername(user.nama);
+        } catch (e) {}
+        router.push(`/${user.nama}/home`);
+      } else if (user.role_id == 1) {
+        router.push('/admin/home');
+      } else if (user.role_id == 2) {
+        router.push('/user/home');
+      } else if (user.role_id == 3) {
+        router.push('/admin_uji/home');
+      } else {
+        errorMessage.value = 'Peran tidak dikenali';
+      }
     }
   } catch (err) {
     errorMessage.value = 'Terjadi kesalahan. Silakan coba lagi.';
@@ -204,10 +216,6 @@ async function handleLogin() {
     isLoading.value = false;
   }
 }
-</script>
-
-<script>
-definePageMeta({ layout: false })
 </script>
 
 <style scoped>

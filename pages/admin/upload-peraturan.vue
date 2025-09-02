@@ -2,13 +2,14 @@
   <div class="min-h-screen bg-gray-50 p-8">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">Daftar Peraturan</h1>
-      <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow" @click="openForm">
-        + Input Peraturan
-      </button>
-    </div>
+    <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow" @click="openForm">
+      + Input Peraturan
+    </button>
+  </div>
 
     <!-- Table -->
     <div class="bg-white rounded-lg shadow p-4">
+ 
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
           <tr>
@@ -68,10 +69,14 @@
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
             </select>
           </div>
-          <div class="mb-4">
-            <label class="block text-sm font-semibold mb-1">Link Dokumen</label>
-            <input v-model="form.link" type="url" class="w-full border rounded px-3 py-2" placeholder="https://drive.google.com/..." required />
-          </div>
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-1">Ukuran File</label>
+              <input v-model="form.file_size" type="text" class="w-full border rounded px-3 py-2" placeholder="Contoh: 2 MB, Link eksternal, dll" />
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-semibold mb-1">Link Dokumen</label>
+              <input v-model="form.link" type="url" class="w-full border rounded px-3 py-2" placeholder="https://drive.google.com/..." required />
+            </div>
           <div class="mb-4">
             <label class="block text-sm font-semibold mb-1">Tags (pisahkan dengan koma)</label>
             <input v-model="form.tags" type="text" class="w-full border rounded px-3 py-2" placeholder="PNS, Manajemen, Jabatan Fungsional" />
@@ -103,6 +108,10 @@
               <option value="" disabled>Pilih kategori...</option>
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
             </select>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-semibold mb-1">Ukuran File</label>
+            <input v-model="editForm.file_size" type="text" class="w-full border rounded px-3 py-2" placeholder="Contoh: 2 MB, Link eksternal, dll" />
           </div>
           <div class="mb-4">
             <label class="block text-sm font-semibold mb-1">Link Dokumen</label>
@@ -159,7 +168,7 @@ async function submitForm() {
       title: form.value.title,
       description: form.value.description,
       file_name: form.value.link,
-      file_size: '-',
+  file_size: form.value.file_size || 'Link eksternal',
       file_count: 1,
       category_id: form.value.category,
       tags: form.value.tags.split(',').map(t => t.trim()).filter(t => t),
@@ -205,7 +214,8 @@ function submitEditForm() {
       ...peraturanList.value[idx],
       title: editForm.value.title,
       description: editForm.value.description,
-      category: { name: editForm.value.category },
+      category_id: editForm.value.category,
+      file_size: editForm.value.file_size || 'Link eksternal',
       file_name: editForm.value.link,
       link: editForm.value.link,
       tags: editForm.value.tags.split(',').map((t, i) => ({ id: i + 1, tag: t.trim() })).filter(t => t.tag),

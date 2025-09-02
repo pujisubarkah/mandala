@@ -29,5 +29,6 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'admin' })
 // Data dummy, bisa diganti dengan fetch API
 </script>

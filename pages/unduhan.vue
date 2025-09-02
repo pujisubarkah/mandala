@@ -210,8 +210,8 @@ async function fetchDownloads() {
         bgColor: item.bg_color || (item.category?.bg_color ? `bg-gradient-to-br ${item.category.bg_color}` : '')
       }))
       .sort((a, b) => {
-        const dateA = new Date(a.lastModified || a.createDate);
-        const dateB = new Date(b.lastModified || b.createDate);
+        const dateA = new Date(a.createDate);
+        const dateB = new Date(b.createDate);
         return dateB - dateA;
       })
     : [];

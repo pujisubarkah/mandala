@@ -436,12 +436,6 @@ const pieOptions = computed(() => ({
     label: { formatter: '{b}: {d}%' }
   }]
 }))
-
-// JenjangStars component - removed as it's causing errors and not used in template
-</script>
-
-<script>
-definePageMeta({ layout: 'admin' })
 </script>
 
 <style scoped>

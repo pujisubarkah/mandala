@@ -80,13 +80,17 @@
         <h3 class="font-black text-xl text-blue-600 mb-4">
           📊 Distribusi AK per Jenjang
         </h3>
-        <VueECharts :option="barOptions" style="height:300px;" />
+        <client-only>
+          <VueECharts :option="barOptions" style="height:300px;" />
+        </client-only>
       </div>
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
         <h3 class="font-black text-xl text-blue-600 mb-4">
           📊 Proporsi Jenjang AK
         </h3>
-        <VueECharts :option="pieOptions" style="height:300px;" />
+        <client-only>
+          <VueECharts :option="pieOptions" style="height:300px;" />
+        </client-only>
       </div>
     </div>
 

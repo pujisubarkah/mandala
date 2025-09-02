@@ -60,7 +60,3 @@ const pieOptions = computed(() => ({
   }]
 }))
 </script>
-
-<script>
-definePageMeta({ layout: 'admin' })
-</script>

@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
         .select({
           id: pegawai.id,
           nip: pegawai.nip,
+          niakn: pegawai.niakn,
           nama: pegawai.nama,
           jns_kelamin: jns_kelamin.jns_kelamin,
           golongan: golongan.golongan,
@@ -32,6 +33,12 @@ export default defineEventHandler(async (event) => {
           pendidikan: pendidikan.pendidikan,
           photo: pegawai.photo,
           jabfung: jabfung.fungsional,
+          phone: pegawai.phone,
+          email: pegawai.email,
+          nomor_surat: pegawai.nomor_surat,
+          tmt_pangkat: pegawai.tmt_pangkat,
+          tmt_surat: pegawai.tmt_surat,
+          unit_kerja: pegawai.unit_kerja,
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -40,8 +47,8 @@ export default defineEventHandler(async (event) => {
         .leftJoin(jenjang, eq(pegawai.jenjang_id, jenjang.id))
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
-  .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
-  .where(eq(pegawai.jabfung_id, 1));
+        .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
+        .where(eq(pegawai.jabfung_id, 1));
       // Pastikan semua field yang bisa null di-handle
       const mapped = result.map(p => ({
         ...p,
@@ -50,6 +57,12 @@ export default defineEventHandler(async (event) => {
         pendidikan: p.pendidikan || '-',
         jabfung: p.jabfung || '-',
         photo: p.nip ? `https://dtjrketxxozstcwvotzh.supabase.co/storage/v1/object/public/foto_pegawai/${p.nip}.jpg` : null,
+        nomor_surat: p.nomor_surat || '-',
+        tmt_pangkat: p.tmt_pangkat || '-',
+        tmt_surat: p.tmt_surat || '-',
+        unit_kerja: p.unit_kerja || '-',
+        phone: p.phone || '-',
+        email: p.email || '-',
       }));
       return mapped;
     } catch (err) {

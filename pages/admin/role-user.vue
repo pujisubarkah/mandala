@@ -15,6 +15,7 @@
             <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Username</th>
             <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Nama</th>
             <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Email</th>
+            <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Instansi</th>
             <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Role</th>
             <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Tanggal Dibuat</th>
             <th class="px-4 py-2 text-left text-xs font-bold text-gray-600">Aksi</th>
@@ -25,6 +26,7 @@
             <td class="px-4 py-2 font-semibold text-gray-800">{{ user.username }}</td>
             <td class="px-4 py-2 text-gray-600">{{ user.nama }}</td>
             <td class="px-4 py-2 text-gray-600">{{ user.email }}</td>
+            <td class="px-4 py-2 text-gray-600">{{ user.nama_instansi || '-' }}</td>
             <td class="px-4 py-2 text-gray-600">{{ roleName(user.role_id) }}</td>
             <td class="px-4 py-2 text-gray-600">{{ formatDate(user.createdAt) }}</td>
             <td class="px-4 py-2">
@@ -56,14 +58,19 @@
           <div class="mb-4">
             <label class="block text-sm font-semibold mb-1">Role</label>
             <select v-model="form.role_id" class="w-full border rounded px-3 py-2" required>
-              <option value="1">Admin</option>
-              <option value="2">User</option>
-              <option value="3">Admin Uji</option>
+              <option v-for="role in roles" :key="role.role_id" :value="role.role_id">{{ role.role_nama }}</option>
             </select>
           </div>
           <div class="mb-4">
             <label class="block text-sm font-semibold mb-1">Password</label>
             <input v-model="form.password" type="password" class="w-full border rounded px-3 py-2" required />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-semibold mb-1">Instansi</label>
+            <select v-model="form.instansi_id" class="w-full border rounded px-3 py-2" required>
+              <option value="">Pilih Instansi</option>
+              <option v-for="ins in instansiList" :key="ins.id" :value="ins.id">{{ ins.nama_instansi }}</option>
+            </select>
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <button type="button" class="px-4 py-2 bg-gray-200 rounded" @click="closeForm">Tutup</button>
@@ -91,17 +98,23 @@
             <input v-model="editForm.email" type="email" class="w-full border rounded px-3 py-2" required />
           </div>
           <div class="mb-4">
+            <label class="block text-sm font-semibold mb-1">Instansi</label>
+            <select v-model="editForm.instansi_id" class="w-full border rounded px-3 py-2" required>
+              <option value="">Pilih Instansi</option>
+              <option v-for="ins in instansiList" :key="ins.id" :value="ins.id">{{ ins.nama_instansi }}</option>
+            </select>
+          </div>
+          <div class="mb-4">
             <label class="block text-sm font-semibold mb-1">Role</label>
             <select v-model="editForm.role_id" class="w-full border rounded px-3 py-2" required>
-              <option value="1">Admin</option>
-              <option value="2">User</option>
-              <option value="3">Admin Uji</option>
+              <option v-for="role in roles" :key="role.role_id" :value="role.role_id">{{ role.role_nama }}</option>
             </select>
           </div>
           <div class="mb-4">
             <label class="block text-sm font-semibold mb-1">Password</label>
             <input v-model="editForm.password" type="password" class="w-full border rounded px-3 py-2" required />
           </div>
+        
           <div class="flex justify-end gap-2 mt-6">
             <button type="button" class="px-4 py-2 bg-gray-200 rounded" @click="closeEditForm">Tutup</button>
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded font-semibold">Simpan</button>
@@ -124,7 +137,8 @@ const form = ref({
   nama: '',
   email: '',
   role_id: '',
-  password: ''
+  password: '',
+  instansi_id: ''
 });
 const editForm = ref({
   id: null,
@@ -132,8 +146,11 @@ const editForm = ref({
   nama: '',
   email: '',
   role_id: '',
-  password: ''
+  password: '',
+  instansi_id: ''
 });
+const roles = ref([]);
+const instansiList = ref([]);
 
 function openForm() {
   showForm.value = true;
@@ -142,22 +159,73 @@ function closeForm() {
   showForm.value = false;
   form.value = { username: '', nama: '', email: '', role_id: '', password: '' };
 }
-function submitForm() {
-  // TODO: POST ke /api/user
+async function submitForm() {
+  try {
+    const res = await fetch('/api/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form.value)
+    });
+    if (!res.ok) throw new Error('Gagal tambah user');
+    await res.json();
+    // Refresh data user
+    const userRes = await fetch('/api/user');
+    const userData = await userRes.json();
+    userList.value = Array.isArray(userData.data) ? userData.data : [];
+    closeForm();
+  } catch (err) {
+    alert(err.message || 'Terjadi kesalahan saat tambah user');
+  }
 }
 function editUser(user) {
-  editForm.value = { ...user };
+  editForm.value = {
+    id: user.id,
+    username: user.username,
+    nama: user.nama,
+    email: user.email,
+    role_id: user.role_id,
+    password: '', // kosongkan password untuk edit
+    instansi_id: user.instansi_id || ''
+  };
   showEditForm.value = true;
 }
 function closeEditForm() {
   showEditForm.value = false;
-  editForm.value = { id: null, username: '', nama: '', email: '', role_id: '', password: '' };
+  editForm.value = { id: null, username: '', nama: '', email: '', role_id: '', password: '', instansi_id: '' };
 }
-function submitEditForm() {
-  // TODO: PUT ke /api/user/:id
+async function submitEditForm() {
+  try {
+    const res = await fetch(`/api/user/${editForm.value.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editForm.value)
+    });
+    if (!res.ok) throw new Error('Gagal edit user');
+    await res.json();
+    // Refresh data user
+    const userRes = await fetch('/api/user');
+    const userData = await userRes.json();
+    userList.value = Array.isArray(userData.data) ? userData.data : [];
+    closeEditForm();
+  } catch (err) {
+    alert(err.message || 'Terjadi kesalahan saat edit user');
+  }
 }
-function deleteUser(id) {
-  // TODO: DELETE ke /api/user/:id
+async function deleteUser(id) {
+  if (!window.confirm('Yakin ingin menghapus user ini?')) return;
+  try {
+    const res = await fetch(`/api/user/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Gagal hapus user');
+    await res.json();
+    // Refresh data user
+    const userRes = await fetch('/api/user');
+    const userData = await userRes.json();
+    userList.value = Array.isArray(userData.data) ? userData.data : [];
+  } catch (err) {
+    alert(err.message || 'Terjadi kesalahan saat hapus user');
+  }
 }
 function formatDate(dateStr) {
   if (!dateStr) return '-';
@@ -165,10 +233,9 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 function roleName(roleId) {
-  if (roleId === 1) return 'Admin';
-  if (roleId === 2) return 'User';
-  if (roleId === 3) return 'Admin Uji';
-  return 'Unknown';
+  if (!roles.value || !Array.isArray(roles.value)) return '-';
+  const role = roles.value.find(r => r.role_id == roleId); // gunakan == untuk handle string/number
+  return role ? role.role_nama : 'Unknown';
 }
 
 onMounted(async () => {
@@ -176,6 +243,14 @@ onMounted(async () => {
   const res = await fetch('/api/user');
   const data = await res.json();
   userList.value = Array.isArray(data.data) ? data.data : [];
+  // Fetch data role dari endpoint API role
+  const roleRes = await fetch('/api/role');
+  const roleData = await roleRes.json();
+  roles.value = Array.isArray(roleData.data) ? roleData.data : (Array.isArray(roleData) ? roleData : []);
+  // Fetch data instansi dari endpoint API instansi
+  const instansiRes = await fetch('/api/instansi');
+  const instansiData = await instansiRes.json();
+  instansiList.value = Array.isArray(instansiData) ? instansiData : (Array.isArray(instansiData.data) ? instansiData.data : []);
 });
 </script>
 
