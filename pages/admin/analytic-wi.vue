@@ -57,6 +57,202 @@
       </div>
     </div>
 
+    <!-- Data Story Section -->
+    <div class="mt-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-3xl p-8 border border-indigo-200">
+      <div class="text-center mb-8">
+        <h2 class="text-4xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          📈 Data Story: Profil Widyaiswara Indonesia
+        </h2>
+        <p class="text-gray-700 text-lg font-medium">Insight mendalam dari {{ totalAKAllProv }} Widyaiswara di seluruh Indonesia</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Gender Balance Card -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-2xl">👫</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800">Keseimbangan Gender</h3>
+              <p class="text-sm text-gray-600">Distribusi Pria vs Wanita</p>
+            </div>
+          </div>
+          <div v-if="summary?.jns_kelamin" class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-gray-700">Pria</span>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-blue-500 rounded-full" :style="`width: ${(summary.jns_kelamin.Pria / (summary.jns_kelamin.Pria + summary.jns_kelamin.Wanita) * 100)}%`"></div>
+                </div>
+                <span class="text-sm font-bold text-blue-600">{{ Math.round(summary.jns_kelamin.Pria / (summary.jns_kelamin.Pria + summary.jns_kelamin.Wanita) * 100) }}%</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-gray-700">Wanita</span>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-pink-500 rounded-full" :style="`width: ${(summary.jns_kelamin.Wanita / (summary.jns_kelamin.Pria + summary.jns_kelamin.Wanita) * 100)}%`"></div>
+                </div>
+                <span class="text-sm font-bold text-pink-600">{{ Math.round(summary.jns_kelamin.Wanita / (summary.jns_kelamin.Pria + summary.jns_kelamin.Wanita) * 100) }}%</span>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-blue-50 to-pink-50 p-3 rounded-lg mt-4">
+              <p class="text-xs text-gray-700 font-medium">
+                💡 <strong>Insight:</strong> Dominasi pria sebesar {{ Math.round(summary.jns_kelamin.Pria / (summary.jns_kelamin.Pria + summary.jns_kelamin.Wanita) * 100) }}% menunjukkan perlu strategi khusus untuk meningkatkan partisipasi wanita dalam jabatan Widyaiswara.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Education Excellence Card -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-2xl">🎓</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800">Kualifikasi Pendidikan</h3>
+              <p class="text-sm text-gray-600">Standar Tinggi Pendidikan</p>
+            </div>
+          </div>
+          <div v-if="summary?.pendidikan" class="space-y-3">
+            <div class="text-center">
+              <div class="text-3xl font-black text-purple-600">{{ Math.round(summary.pendidikan.S2 / (summary.pendidikan.S2 + summary.pendidikan.S3) * 100) }}%</div>
+              <p class="text-sm text-gray-600">Bergelar S2</p>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-indigo-600">{{ Math.round(summary.pendidikan.S3 / (summary.pendidikan.S2 + summary.pendidikan.S3) * 100) }}%</div>
+              <p class="text-sm text-gray-600">Bergelar S3</p>
+            </div>
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-3 rounded-lg mt-4">
+              <p class="text-xs text-gray-700 font-medium">
+                🏆 <strong>Excellence:</strong> 100% Widyaiswara memiliki pendidikan minimal S2, dengan {{ summary.pendidikan.S3 }} orang bergelar S3 sebagai dosen senior.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Age Distribution Card -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-2xl">📊</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800">Profil Usia</h3>
+              <p class="text-sm text-gray-600">Distribusi Generasi</p>
+            </div>
+          </div>
+          <div v-if="summary?.rentang_usia" class="space-y-3">
+            <div class="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <div class="text-2xl font-bold text-green-600">{{ summary.rentang_usia['30-34 tahun'] + summary.rentang_usia['35-39 tahun'] }}</div>
+                <p class="text-xs text-gray-600">Usia 30-39</p>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-orange-600">{{ summary.rentang_usia['40-44 tahun'] + summary.rentang_usia['45-49 tahun'] }}</div>
+                <p class="text-xs text-gray-600">Usia 40-49</p>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-orange-50 to-red-50 p-3 rounded-lg mt-4">
+              <p class="text-xs text-gray-700 font-medium">
+                ⚡ <strong>Prime Age:</strong> Mayoritas Widyaiswara berada di usia produktif 30-49 tahun, menunjukkan kematangan pengalaman dan energi optimal.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Institutions Card -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-2xl">🏛️</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800">Institusi Terdepan</h3>
+              <p class="text-sm text-gray-600">Top 3 Kementerian</p>
+            </div>
+          </div>
+          <div v-if="allInstansiData.length > 0" class="space-y-2">
+            <div v-for="(inst, idx) in allInstansiData.slice(0, 3)" :key="idx" class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+              <span class="text-sm font-medium text-gray-700 truncate flex-1">{{ inst.provinsi.replace('Kementerian ', '').replace('Pemerintah Provinsi ', '') }}</span>
+              <span class="text-sm font-bold text-emerald-600 ml-2">{{ inst.total }}</span>
+            </div>
+            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-3 rounded-lg mt-4">
+              <p class="text-xs text-gray-700 font-medium">
+                🎯 <strong>Distribution:</strong> {{ allInstansiData.length }} instansi dengan distribusi yang cukup merata di seluruh Indonesia.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Career Path Card -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-2xl">🚀</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-800">Jalur Karier</h3>
+              <p class="text-sm text-gray-600">Path to Excellence</p>
+            </div>
+          </div>
+          <div v-if="summary?.jalur_pengangkatan" class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-700">Perpindahan Jabatan</span>
+              <span class="text-sm font-bold text-blue-600">{{ summary.jalur_pengangkatan['Perpindahan Jabatan'] }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-700">Inpassing</span>
+              <span class="text-sm font-bold text-green-600">{{ summary.jalur_pengangkatan['Inpassing'] }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-700">Pengangkatan Pertama</span>
+              <span class="text-sm font-bold text-purple-600">{{ summary.jalur_pengangkatan['Pengangkatan Pertama'] }}</span>
+            </div>
+            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-3 rounded-lg mt-4">
+              <p class="text-xs text-gray-700 font-medium">
+                💼 <strong>Career Growth:</strong> Mayoritas melalui perpindahan jabatan dan inpassing, menunjukkan pengalaman kerja yang kaya.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Metrics Summary -->
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg border border-indigo-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <span class="text-2xl">📈</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-white">Key Metrics</h3>
+              <p class="text-sm text-indigo-100">Ringkasan Eksekutif</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-sm text-indigo-100">Total Widyaiswara</span>
+              <span class="font-bold">{{ totalAKAllProv.toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-indigo-100">Cakupan Instansi</span>
+              <span class="font-bold">{{ allInstansiData.length }}</span>
+            </div>
+            <div class="flex justify-between" v-if="summary?.pendidikan">
+              <span class="text-sm text-indigo-100">Kualifikasi S3</span>
+              <span class="font-bold">{{ Math.round(summary.pendidikan.S3 / (summary.pendidikan.S2 + summary.pendidikan.S3) * 100) }}%</span>
+            </div>
+            <div class="bg-white/10 p-3 rounded-lg mt-4">
+              <p class="text-xs text-indigo-100 font-medium">
+                ✨ Widyaiswara Indonesia memiliki standar kualifikasi tinggi dengan distribusi yang merata di seluruh nusantara.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Data Instansi Table -->
     <div class="overflow-x-auto rounded-2xl shadow-2xl mt-8">
       <div class="flex items-center justify-between mb-4">

@@ -1,38 +1,175 @@
 <template>
-  <div class="p-8 flex flex-col gap-10 min-h-screen relative overflow-hidden">
-    <!-- Header -->
-    <div class="relative bg-white/40 backdrop-blur-2xl rounded-3xl p-10 shadow-2xl border border-white/50">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-5xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
-            <BarChart2 class="inline-block w-10 h-10 text-blue-600 mr-2" /> Analitik Data AK
-          </h1>
-          <p class="text-gray-700 text-xl font-medium">Dashboard analisis mendalam untuk insight data Analis Kebijakan</p>
-        </div>
-        <div class="hidden md:flex items-center gap-6">
-          <div class="text-right">
-            <div class="text-4xl font-black text-blue-600">{{ totalAKAllProv }}</div>
-            <div class="text-sm text-gray-600 font-medium">Total AK</div>
-            <div class="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-              <TrendingUp v-if="isGrowthUp" class="w-5 h-5" />
-              <TrendingDown v-else class="w-5 h-5" />
-              {{ growth }}% pertumbuhan
+  <div class="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4">
+          📊 Dashboard Analitik Analis Kebijakan
+        </h1>
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+              <div class="text-3xl font-black text-emerald-600 mb-2">{{ totalAKAllProv }}</div>
+              <div class="text-sm font-medium text-gray-600">Total Analis Kebijakan</div>
             </div>
+            <div class="text-center">
+              <div class="text-3xl font-black text-teal-600 mb-2 flex items-center justify-center gap-2">
+                {{ growth }}%
+                <span :class="isGrowthUp ? 'text-green-500' : 'text-red-500'">
+                  {{ isGrowthUp ? '📈' : '📉' }}
+                </span>
+              </div>
+              <div class="text-sm font-medium text-gray-600">Pertumbuhan Tahunan</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-black text-cyan-600 mb-2">{{ provinsiData.length }}</div>
+              <div class="text-sm font-medium text-gray-600">Instansi Terdaftar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Data Stories Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Pendidikan Story -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 border-l-4 border-blue-500 shadow-lg">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            🎓
+          </div>
+          <h3 class="font-bold text-lg text-blue-800">Profil Pendidikan</h3>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-blue-700">Dominasi S1 & S2</div>
+            <div class="text-gray-700">
+              {{ Math.round(((summary?.pendidikan?.['S1'] || 0) + (summary?.pendidikan?.['S2'] || 0)) / 
+                Object.values(summary?.pendidikan || {}).reduce((a,b) => a+b, 0) * 100) }}% 
+              AK berlatar S1-S2
+            </div>
+          </div>
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-blue-700">Potensi S3</div>
+            <div class="text-gray-700">
+              {{ summary?.pendidikan?.['S3'] || 0 }} doktor 
+              ({{ Math.round((summary?.pendidikan?.['S3'] || 0) / 
+                Object.values(summary?.pendidikan || {}).reduce((a,b) => a+b, 0) * 100) }}%)
+            </div>
+          </div>
+          <div class="bg-blue-500 text-white rounded-lg p-3 font-bold text-center">
+            📈 Trend: Kualifikasi Tinggi!
+          </div>
+        </div>
+      </div>
+
+      <!-- Jenjang Story with Prediction -->
+      <div class="bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl p-6 border-l-4 border-emerald-500 shadow-lg">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
+            🏆
+          </div>
+          <h3 class="font-bold text-lg text-emerald-800">Proyeksi Jenjang</h3>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-emerald-700">Kondisi Saat Ini</div>
+            <div class="text-gray-700">
+              Muda: {{ summary?.nm_jenjang?.['Muda'] || 0 }} | 
+              Madya: {{ summary?.nm_jenjang?.['Madya'] || 0 }}
+            </div>
+          </div>
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-emerald-700">Prediksi 3 Tahun</div>
+            <div class="text-gray-700">
+              Estimasi +{{ Math.round((summary?.nm_jenjang?.['Pertama'] || 0) * 0.6) }} 
+              naik ke Muda
+            </div>
+            <div class="text-gray-700">
+              Estimasi +{{ Math.round((summary?.nm_jenjang?.['Muda'] || 0) * 0.4) }} 
+              naik ke Madya
+            </div>
+          </div>
+          <div class="bg-emerald-500 text-white rounded-lg p-3 font-bold text-center">
+            🚀 Proyeksi: +{{ Math.round((summary?.nm_jenjang?.['Pertama'] || 0) * 0.6 + (summary?.nm_jenjang?.['Muda'] || 0) * 0.4) }} Promosi
+          </div>
+        </div>
+      </div>
+
+      <!-- Usia Story -->
+      <div class="bg-gradient-to-br from-orange-50 to-red-100 rounded-xl p-6 border-l-4 border-orange-500 shadow-lg">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+            ⏰
+          </div>
+          <h3 class="font-bold text-lg text-orange-800">Dinamika Usia</h3>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-orange-700">Usia Produktif</div>
+            <div class="text-gray-700">
+              {{ Math.round(((summary?.rentang_usia?.['30-39'] || 0) + (summary?.rentang_usia?.['40-49'] || 0)) / 
+                Object.values(summary?.rentang_usia || {}).reduce((a,b) => a+b, 0) * 100) }}% 
+              dalam rentang 30-49 tahun
+            </div>
+          </div>
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-orange-700">Regenerasi</div>
+            <div class="text-gray-700">
+              {{ summary?.rentang_usia?.['20-29'] || 0 }} AK muda 
+              siap berkembang
+            </div>
+          </div>
+          <div class="bg-orange-500 text-white rounded-lg p-3 font-bold text-center">
+            ⚡ Bonus Demografi Aktif!
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Chart Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 class="font-black text-xl text-blue-600 mb-4 flex items-center gap-2">
+          📊 AK per Golongan
+        </h3>
         <client-only>
           <VueECharts :option="barOptions" style="height:320px;" />
         </client-only>
       </div>
-      <div>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 class="font-black text-xl text-purple-600 mb-4 flex items-center gap-2">
+          👥 Komposisi Jenis Kelamin
+        </h3>
         <client-only>
           <VueECharts :option="pieOptions" style="height:320px;" />
+        </client-only>
+      </div>
+    </div>
+
+    <!-- Additional Charts Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 class="font-black text-xl text-purple-600 mb-4 flex items-center gap-2">
+          🎓 Distribusi Pendidikan
+        </h3>
+        <client-only>
+          <VueECharts :option="pendidikanOptions" style="height:320px;" />
+        </client-only>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 class="font-black text-xl text-orange-600 mb-4 flex items-center gap-2">
+          📊 Distribusi Rentang Usia
+        </h3>
+        <client-only>
+          <VueECharts :option="usiaOptions" style="height:320px;" />
+        </client-only>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 class="font-black text-xl text-emerald-600 mb-4 flex items-center gap-2">
+          🏆 Distribusi Jenjang AK
+        </h3>
+        <client-only>
+          <VueECharts :option="jenjangOptions" style="height:320px;" />
         </client-only>
       </div>
     </div>
@@ -80,7 +217,8 @@
         </tbody>
       </table>
     </div>
-  </div>
+    </div>
+    </div>
 </template>
 
 <script setup>
@@ -141,6 +279,84 @@ const pieOptions = computed(() => ({
     radius: '60%',
     data: Object.entries(summary.value?.jns_kelamin || {}).map(([name, value]) => ({ value, name })),
     label: { formatter: '{b}: {d}%' }
+  }]
+}))
+
+const pendidikanOptions = computed(() => ({
+  title: { text: 'Distribusi Pendidikan', left: 'center' },
+  tooltip: { 
+    trigger: 'item',
+    formatter: '{b}: {c} ({d}%)'
+  },
+  legend: { 
+    bottom: 0,
+    type: 'scroll'
+  },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    data: Object.entries(summary.value?.pendidikan || {}).map(([name, value]) => ({ 
+      value, 
+      name: name === '-' ? 'Tidak Diketahui' : name 
+    })),
+    label: { 
+      formatter: '{b}: {d}%',
+      fontSize: 10
+    },
+    emphasis: {
+      itemStyle: {
+        shadowBlur: 10,
+        shadowOffsetX: 0,
+        shadowColor: 'rgba(0, 0, 0, 0.5)'
+      }
+    }
+  }]
+}))
+
+const usiaOptions = computed(() => ({
+  title: { text: 'Distribusi Rentang Usia', left: 'center' },
+  tooltip: {
+    trigger: 'axis',
+    formatter: '{b}: {c} orang'
+  },
+  xAxis: { 
+    type: 'category', 
+    data: Object.keys(summary.value?.rentang_usia || {}),
+    axisLabel: { 
+      rotate: 45,
+      fontSize: 10
+    }
+  },
+  yAxis: { type: 'value' },
+  series: [{
+    type: 'bar',
+    data: Object.values(summary.value?.rentang_usia || {}),
+    itemStyle: { color: '#10b981' },
+    emphasis: {
+      itemStyle: { color: '#059669' }
+    }
+  }]
+}))
+
+const jenjangOptions = computed(() => ({
+  title: { text: 'Komposisi Jenjang Jabatan', left: 'center' },
+  tooltip: { 
+    trigger: 'item',
+    formatter: '{b}: {c} ({d}%)'
+  },
+  legend: { bottom: 0 },
+  series: [{
+    type: 'pie',
+    radius: '60%',
+    data: Object.entries(summary.value?.nm_jenjang || {}).map(([name, value]) => ({ value, name })),
+    label: { formatter: '{b}: {d}%' },
+    emphasis: {
+      itemStyle: {
+        shadowBlur: 10,
+        shadowOffsetX: 0,
+        shadowColor: 'rgba(0, 0, 0, 0.5)'
+      }
+    }
   }]
 }))
 </script>
