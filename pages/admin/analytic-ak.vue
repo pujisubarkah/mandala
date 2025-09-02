@@ -107,16 +107,22 @@
           <div class="bg-white/60 rounded-lg p-3">
             <div class="font-bold text-orange-700">Usia Produktif</div>
             <div class="text-gray-700">
-              {{ Math.round(((summary?.rentang_usia?.['30-39'] || 0) + (summary?.rentang_usia?.['40-49'] || 0)) / 
-                Object.values(summary?.rentang_usia || {}).reduce((a,b) => a+b, 0) * 100) }}% 
-              dalam rentang 30-49 tahun
+              {{ ageAnalysis.productive.percentage }}% 
+              ({{ ageAnalysis.productive.count }} orang) dalam usia produktif
             </div>
           </div>
           <div class="bg-white/60 rounded-lg p-3">
             <div class="font-bold text-orange-700">Regenerasi</div>
             <div class="text-gray-700">
-              {{ summary?.rentang_usia?.['20-29'] || 0 }} AK muda 
-              siap berkembang
+              {{ ageAnalysis.young.count }} AK muda 
+              ({{ ageAnalysis.young.percentage }}%) siap berkembang
+            </div>
+          </div>
+          <div class="bg-white/60 rounded-lg p-3">
+            <div class="font-bold text-orange-700">Prapensiun</div>
+            <div class="text-gray-700">
+              {{ ageAnalysis.preRetirement.count }} AK 
+              ({{ ageAnalysis.preRetirement.percentage }}%) mendekati pensiun
             </div>
           </div>
           <div class="bg-orange-500 text-white rounded-lg p-3 font-bold text-center">
@@ -243,6 +249,37 @@ const growth = ref(8)
 const isGrowthUp = computed(() => growth.value >= 0)
 const totalAKAllProv = ref(0)
 const provinsiData = ref([])
+
+// Dynamic age analysis
+const ageAnalysis = computed(() => {
+  const ageData = summary.value?.rentang_usia || {}
+  const total = Object.values(ageData).reduce((a, b) => a + b, 0)
+  
+  let youngCount = 0
+  let productiveCount = 0
+  let seniorCount = 0
+  let preRetirementCount = 0
+  
+  Object.entries(ageData).forEach(([range, count]) => {
+    const match = range.match(/(\d+)-(\d+)/)
+    if (match) {
+      const start = parseInt(match[1])
+      const end = parseInt(match[2])
+      
+      if (start >= 20 && end <= 35) youngCount += count
+      if (start >= 30 && end <= 55) productiveCount += count
+      if (start >= 45 && end <= 60) seniorCount += count
+      if (start >= 55) preRetirementCount += count
+    }
+  })
+  
+  return {
+    young: { count: youngCount, percentage: Math.round(youngCount / total * 100) },
+    productive: { count: productiveCount, percentage: Math.round(productiveCount / total * 100) },
+    senior: { count: seniorCount, percentage: Math.round(seniorCount / total * 100) },
+    preRetirement: { count: preRetirementCount, percentage: Math.round(preRetirementCount / total * 100) }
+  }
+})
 
 onMounted(async () => {
   const res = await fetch('/api/analis_kebijakan/summary')
