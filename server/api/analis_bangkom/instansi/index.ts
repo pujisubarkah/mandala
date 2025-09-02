@@ -1,6 +1,5 @@
-
-import { db } from '@/server/database'; // Ensure this db is created using drizzle-orm/mysql-core
-import { pegawai } from '@/server/database/schema/pegawai'; // Pastikan schema ini menggunakan field lowercase jabfung_id
+import { db } from '@/server/database';
+import { pegawai } from '@/server/database/schema/pegawai';
 import { jns_kelamin } from '@/server/database/schema/jns_kelamin';
 import { golongan } from '@/server/database/schema/golongan';
 import { jalur } from '@/server/database/schema/jalur';
@@ -8,18 +7,19 @@ import { jenjang } from '@/server/database/schema/jenjang';
 import { instansi } from '@/server/database/schema/instansi';
 import { pendidikan } from '@/server/database/schema/pendidikan';
 import { jabfung } from '@/server/database/schema/jabfung';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { readBody, sendError, createError } from 'h3';
-// Make sure your db instance and schema are created using drizzle-orm/mysql-core
-
-// If you are using drizzle-orm/mysql-core, ensure your db and schema are imported from drizzle-orm/mysql-core, not pg-core.
 
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method;
+  const query = event.node.req.url ? new URL(event.node.req.url, 'http://localhost').searchParams : null;
+  const instansi_id = query?.get('instansi_id');
 
   if (method === 'GET') {
     try {
-      // Gunakan nama field konsisten: jabfung_id
+      if (!instansi_id) {
+        return sendError(event, createError({ statusCode: 400, statusMessage: 'instansi_id required' }));
+      }
       const result = await db
         .select({
           id: pegawai.id,
@@ -50,8 +50,11 @@ export default defineEventHandler(async (event) => {
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
         .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
-        .where(eq(pegawai.jabfung_id, '2'));
-      // Pastikan semua field yang bisa null di-handle
+        .where(and(
+          eq(pegawai.jabfung_id, '3'), 
+          eq(pegawai.instansi_id, instansi_id),
+          eq(pegawai.status, 'aktif') // Only get active widyaiswara
+        ));
       const mapped = result.map(p => ({
         ...p,
         nm_jenjang: p.nm_jenjang || '-',
@@ -69,8 +72,6 @@ export default defineEventHandler(async (event) => {
       }));
       return mapped;
     } catch (err) {
-      // Log error detail ke console agar mudah debug
-      // eslint-disable-next-line no-console
       console.error('DB Error:', err);
       return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal mengambil data' }));
     }
@@ -80,16 +81,17 @@ export default defineEventHandler(async (event) => {
     try {
       const body = await readBody(event);
       
-      // Validate and structure data for widyaiswara
+      // Validate required fields for widyaiswara
       const newWidyaiswara = {
+        id: body.id ?? undefined, // Add this line; or use null if your schema allows
         nip: body.nip,
         niakn: body.niakn || null,
         nama: body.nama,
-        jns_kelamin_id: body.jns_kelamin_id ? String(body.jns_kelamin_id) : null,
-        golongan_id: body.golongan_id ? String(body.golongan_id) : null,
-        jalur_id: body.jalur_id ? String(body.jalur_id) : null,
-        jenjang_id: body.jenjang_id ? String(body.jenjang_id) : null,
-        instansi_id: body.instansi_id ? String(body.instansi_id) : null,
+        jns_kelamin_id: body.jns_kelamin_id || null,
+        golongan_id: body.golongan_id || null,
+        jalur_id: body.jalur_id || null,
+        jenjang_id: body.jenjang_id || null,
+        instansi_id: body.instansi_id,
         phone: body.phone || null,
         email: body.email || null,
         nomor_surat: body.nomor_surat || null,
@@ -97,8 +99,8 @@ export default defineEventHandler(async (event) => {
         tmt_surat: body.tmt_surat || null,
         unit_kerja: body.unit_kerja || null,
         photo: body.photo || null,
-        jabfung_id: '2', // Widyaiswara jabfung_id as string
-        pendidikan_id: body.pendidikan_id ? String(body.pendidikan_id) : null,
+        jabfung_id: '3', // Widyaiswara jabfung_id
+        pendidikan_id: body.pendidikan_id || null,
         status: body.status || 'aktif',
       };
 

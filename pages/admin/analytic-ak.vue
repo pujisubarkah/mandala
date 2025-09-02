@@ -84,6 +84,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin'
+})
+
 import { ref, onMounted, computed } from 'vue'
 import VueECharts from 'vue-echarts'
 import * as echarts from 'echarts/core'

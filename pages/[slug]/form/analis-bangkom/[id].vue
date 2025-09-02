@@ -37,7 +37,7 @@ onMounted(async () => {
   loading.value = true
   try {
     const [pegawaiRes, pendidikanRes, instansiRes, jenjangRes, jenisKelaminRes, golonganRes, jalurRes] = await Promise.all([
-      $fetch(`/api/analis_kebijakan/${id}`),
+      $fetch(`/api/analis_bangkom/${id}`),
       $fetch('/api/pendidikan'),
       $fetch('/api/instansi'),
       $fetch('/api/jenjang'),
@@ -242,7 +242,7 @@ const FormRowSelect = defineComponent({
         <!-- Back Button -->
         <div class="mb-6">
           <NuxtLink
-            :to="`/admin/jumlah-ak`"
+            :to="`/${username}/form/analis-bangkom`"
             class="inline-flex items-center gap-3 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-200 text-blue-700 hover:bg-blue-50 font-semibold group transition-all"
           >
             <Icon icon="mdi:arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -445,6 +445,30 @@ const FormRowSelect = defineComponent({
                         <option value="">Pilih Jenis Kelamin</option>
                         <option value="Pria">👨 Pria</option>
                         <option value="Wanita">👩 Wanita</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <!-- Status Field -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <div class="relative">
+                      <div v-if="!isEditing" class="w-full px-4 py-2 rounded-lg border bg-gray-100 text-gray-700 flex items-center gap-2">
+                        <Icon :icon="formData?.status === 'aktif' ? 'mdi:check-circle' : formData?.status === 'non_aktif' ? 'mdi:close-circle' : formData?.status === 'pensiun' ? 'mdi:account-clock' : 'mdi:account-arrow-right'" 
+                              :class="formData?.status === 'aktif' ? 'text-green-600' : formData?.status === 'non_aktif' ? 'text-red-600' : formData?.status === 'pensiun' ? 'text-orange-600' : 'text-blue-600'" 
+                              class="w-5 h-5" />
+                        <span class="capitalize">{{ formData?.status || 'aktif' }}</span>
+                      </div>
+                      <select v-else
+                        name="status"
+                        :value="formData?.status || 'aktif'"
+                        @change="handleChange"
+                        class="w-full px-4 py-2 rounded-lg border text-gray-700 focus:ring-2 focus:ring-blue-300 outline-none transition bg-white hover:border-gray-400 focus:border-blue-500"
+                      >
+                        <option value="aktif">✅ Aktif</option>
+                        <option value="non_aktif">❌ Non Aktif</option>
+                        <option value="pensiun">🏖️ Pensiun</option>
+                        <option value="mutasi">🔄 Mutasi</option>
                       </select>
                     </div>
                   </div>

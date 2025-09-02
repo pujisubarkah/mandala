@@ -37,7 +37,7 @@ onMounted(async () => {
   loading.value = true
   try {
     const [pegawaiRes, pendidikanRes, instansiRes, jenjangRes, jenisKelaminRes, golonganRes, jalurRes] = await Promise.all([
-      $fetch(`/api/analis_kebijakan/${id}`),
+      $fetch(`/api/widyaiswara/${id}`),
       $fetch('/api/pendidikan'),
       $fetch('/api/instansi'),
       $fetch('/api/jenjang'),
@@ -242,7 +242,7 @@ const FormRowSelect = defineComponent({
         <!-- Back Button -->
         <div class="mb-6">
           <NuxtLink
-            :to="`/admin/jumlah-ak`"
+            :to="`/${username}/form/analis-kebijakan`"
             class="inline-flex items-center gap-3 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-200 text-blue-700 hover:bg-blue-50 font-semibold group transition-all"
           >
             <Icon icon="mdi:arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />

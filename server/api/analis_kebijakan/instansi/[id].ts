@@ -40,6 +40,7 @@ export default defineEventHandler(async (event) => {
           tmt_pangkat: pegawai.tmt_pangkat,
           tmt_surat: pegawai.tmt_surat,
           unit_kerja: pegawai.unit_kerja,
+          status: pegawai.status,
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -49,14 +50,13 @@ export default defineEventHandler(async (event) => {
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
         .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
-        .where(and(eq(pegawai.jabfung_id, 1), eq(pegawai.instansi_id, Number(instansi_id))));
-      const mapped = result.map((p) => ({
-        id: p.id,
-        nip: p.nip,
-        nama: p.nama,
-        jns_kelamin: p.jns_kelamin,
-        golongan: p.golongan,
-        jalur_pengangkatan: p.jalur_pengangkatan,
+        .where(and(
+          eq(pegawai.jabfung_id, '1'), 
+          eq(pegawai.instansi_id, instansi_id),
+          eq(pegawai.status, 'aktif') // Only get active analis kebijakan
+        ));
+      const mapped = result.map(p => ({
+        ...p,
         nm_jenjang: p.nm_jenjang || '-',
         nama_instansi: p.nama_instansi || '-',
         pendidikan: p.pendidikan || '-',
@@ -68,6 +68,7 @@ export default defineEventHandler(async (event) => {
         unit_kerja: p.unit_kerja || '-',
         phone: p.phone || '-',
         email: p.email || '-',
+        status: p.status || 'aktif',
       }));
       return mapped;
     } catch (err) {
@@ -79,10 +80,34 @@ export default defineEventHandler(async (event) => {
   if (method === 'POST') {
     try {
       const body = await readBody(event);
-      await db.insert(pegawai).values(body);
-      return { success: true };
+      
+      // Validate and structure data for analis kebijakan
+      const newAnaliskebijakan = {
+        nip: body.nip,
+        niakn: body.niakn || null,
+        nama: body.nama,
+        jns_kelamin_id: body.jns_kelamin_id ? String(body.jns_kelamin_id) : null,
+        golongan_id: body.golongan_id ? String(body.golongan_id) : null,
+        jalur_id: body.jalur_id ? String(body.jalur_id) : null,
+        jenjang_id: body.jenjang_id ? String(body.jenjang_id) : null,
+        instansi_id: body.instansi_id ? String(body.instansi_id) : null,
+        phone: body.phone || null,
+        email: body.email || null,
+        nomor_surat: body.nomor_surat || null,
+        tmt_pangkat: body.tmt_pangkat || null,
+        tmt_surat: body.tmt_surat || null,
+        unit_kerja: body.unit_kerja || null,
+        photo: body.photo || null,
+        jabfung_id: '1', // Analis Kebijakan jabfung_id as string
+        pendidikan_id: body.pendidikan_id ? String(body.pendidikan_id) : null,
+        status: body.status || 'aktif',
+      };
+
+      await db.insert(pegawai).values(newAnaliskebijakan);
+      return { success: true, message: 'Data analis kebijakan berhasil ditambahkan' };
     } catch (err) {
-      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menambah data' }));
+      console.error('Insert Error:', err);
+      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menambah data analis kebijakan' }));
     }
   }
 

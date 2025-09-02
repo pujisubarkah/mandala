@@ -4,9 +4,13 @@
       <div class="text-center">
    
         <div class="flex items-center justify-center gap-1 mb-6">
-          <img src="/logo.png" alt="Logo Mandala" class="h-20 w-auto object-contain align-middle" style="background:transparent;" />
-          <span class="text-3xl font-bold align-middle">daTAMandala</span>
+          <img src="/lanri.png" alt="LAN RI" class="h-16 w-auto object-contain" />
+          <img src="/berakhlak.png" alt="Berakhlak" class="h-16 w-auto object-contain" />
+          <img src="/bangga.png" alt="Bangga" class="h-16 w-auto object-contain" />
+           <span class="text-3xl font-bold align-middle">daTAMandala</span>
         </div>
+        
+       
   <p class="text-black mb-6 max-w-2xl mx-auto">Sistem Informasi Manajemen Data Fungsional untuk kemajuan karir Analis Kebijakan di seluruh Indonesia.</p>
   <div class="flex justify-center space-x-6 text-black">
           <span>© 2024 daTAMandala. All rights reserved.</span>

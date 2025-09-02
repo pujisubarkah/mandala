@@ -80,13 +80,23 @@
         <h3 class="font-black text-xl text-blue-600 mb-4">
           📊 Distribusi AK per Jenjang
         </h3>
-        <VueECharts :option="barOptions" style="height:300px;" />
+        <client-only>
+          <component v-if="isChartsLoaded && VueECharts" :is="VueECharts" :option="barOptions" style="height:300px;" />
+          <div v-else class="flex items-center justify-center h-75">
+            <div class="text-gray-500">Loading chart...</div>
+          </div>
+        </client-only>
       </div>
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
         <h3 class="font-black text-xl text-blue-600 mb-4">
           📊 Proporsi Jenjang AK
         </h3>
-        <VueECharts :option="pieOptions" style="height:300px;" />
+        <client-only>
+          <component v-if="isChartsLoaded && VueECharts" :is="VueECharts" :option="pieOptions" style="height:300px;" />
+          <div v-else class="flex items-center justify-center h-75">
+            <div class="text-gray-500">Loading chart...</div>
+          </div>
+        </client-only>
       </div>
     </div>
 
@@ -132,8 +142,10 @@
             <thead>
               <tr class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
                 <th class="py-4 px-6 font-bold text-sm tracking-wider">👤 Nama (Klik untuk Detail)</th>
-                <th class="py-4 px-6 font-bold text-sm tracking-wider">🏆 Jenjang</th>
-                <th class="py-4 px-6 font-bold text-sm tracking-wider">🏢 Instansi</th>
+                <th class="py-4 px-6 font-bold text-sm tracking-wider">� NIP</th>
+                <th class="py-4 px-6 font-bold text-sm tracking-wider">�🏆 Jenjang</th>
+                <th class="py-4 px-6 font-bold text-sm tracking-wider">🏢 Unit Kerja</th>
+                <th class="py-4 px-6 font-bold text-sm tracking-wider">🏛️ Instansi</th>
               </tr>
             </thead>
             <tbody>
@@ -158,9 +170,11 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
                       </div>
-                      <div class="text-xs text-gray-500">ID: {{ row.id }} • Klik untuk detail</div>
                     </div>
                   </div>
+                </td>
+                <td class="py-4 px-6 font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                  <div class="font-mono text-sm">{{ row.nip || '-' }}</div>
                 </td>
                 <td class="py-4 px-6">
                   <span
@@ -174,6 +188,9 @@
                     </span>
                     {{ row.jenjang }}
                   </span>
+                </td>
+                <td class="py-4 px-6 font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                  <div class="max-w-xs truncate">{{ row.unitKerja || '-' }}</div>
                 </td>
                 <td class="py-4 px-6 font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
                   <div class="max-w-xs truncate">{{ row.instansi }}</div>
@@ -287,15 +304,14 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'admin' })
+
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import VueECharts from 'vue-echarts'
-import * as echarts from 'echarts/core'
-import { BarChart, PieChart } from 'echarts/charts'
-import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
 
-echarts.use([BarChart, PieChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent, CanvasRenderer])
+let VueECharts = ref(null)
+let echarts = null
+const isChartsLoaded = ref(false)
 
 // Jenjang badge style
 const JENJANG_BADGE = {
@@ -332,6 +348,25 @@ const filterJenjang = ref("")
 
 // Fetch pegawai data
 onMounted(async () => {
+  // Load ECharts dynamically on client side
+  if (process.client) {
+    try {
+      const { default: VueEChartsComponent } = await import('vue-echarts')
+      const echartsCore = await import('echarts/core')
+      const { BarChart, PieChart } = await import('echarts/charts')
+      const { TitleComponent, TooltipComponent, LegendComponent, GridComponent } = await import('echarts/components')
+      const { CanvasRenderer } = await import('echarts/renderers')
+      
+      VueECharts.value = VueEChartsComponent
+      echarts = echartsCore
+      
+      echarts.use([BarChart, PieChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent, CanvasRenderer])
+      isChartsLoaded.value = true
+    } catch (error) {
+      console.error('Failed to load ECharts:', error)
+    }
+  }
+  
   const res = await fetch("/api/analis_kebijakan")
   pegawai.value = await res.json()
 })
@@ -350,10 +385,11 @@ const dataTable = computed(() =>
   pegawai.value.map(p => ({
     id: p.id,
     nama: p.nama,
+    nip: p.nip,
     jenjang: p.nm_jenjang || "-",
+    unitKerja: p.unit_kerja,
     instansi: p.nama_instansi || "-",
     provinsi: p.provinsi || "-",
-    nip: p.nip,
     email: p.email,
   }))
 )

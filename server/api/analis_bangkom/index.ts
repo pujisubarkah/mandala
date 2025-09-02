@@ -7,7 +7,7 @@ import { jenjang } from '@/server/database/schema/jenjang';
 import { instansi } from '@/server/database/schema/instansi';
 import { pendidikan } from '@/server/database/schema/pendidikan';
 import { jabfung } from '@/server/database/schema/jabfung';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { readBody, sendError, createError } from 'h3';
 // Make sure your db instance and schema are created using drizzle-orm/mysql-core
 
@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) => {
           pendidikan: pendidikan.pendidikan,
           photo: pegawai.photo,
           jabfung: jabfung.fungsional,
+          status: pegawai.status,
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -40,8 +41,8 @@ export default defineEventHandler(async (event) => {
         .leftJoin(jenjang, eq(pegawai.jenjang_id, jenjang.id))
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
-  .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
-  .where(eq(pegawai.jabfung_id, 3));
+        .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
+        .where(and(eq(pegawai.jabfung_id, '3'), eq(pegawai.status, 'aktif')));
       // Pastikan semua field yang bisa null di-handle
       const mapped = result.map(p => ({
         ...p,
@@ -50,6 +51,7 @@ export default defineEventHandler(async (event) => {
         pendidikan: p.pendidikan || '-',
         jabfung: p.jabfung || '-',
         photo: p.nip ? `https://dtjrketxxozstcwvotzh.supabase.co/storage/v1/object/public/foto_pegawai/${p.nip}.jpg` : null,
+        status: p.status || 'aktif',
       }));
       return mapped;
     } catch (err) {
@@ -63,10 +65,34 @@ export default defineEventHandler(async (event) => {
   if (method === 'POST') {
     try {
       const body = await readBody(event);
-      await db.insert(pegawai).values(body);
-      return { success: true };
+      
+      // Validate and structure data for analis bangkom
+      const newAnalisBangkom = {
+        nip: body.nip,
+        niakn: body.niakn || null,
+        nama: body.nama,
+        jns_kelamin_id: body.jns_kelamin_id ? String(body.jns_kelamin_id) : null,
+        golongan_id: body.golongan_id ? String(body.golongan_id) : null,
+        jalur_id: body.jalur_id ? String(body.jalur_id) : null,
+        jenjang_id: body.jenjang_id ? String(body.jenjang_id) : null,
+        instansi_id: body.instansi_id ? String(body.instansi_id) : null,
+        phone: body.phone || null,
+        email: body.email || null,
+        nomor_surat: body.nomor_surat || null,
+        tmt_pangkat: body.tmt_pangkat || null,
+        tmt_surat: body.tmt_surat || null,
+        unit_kerja: body.unit_kerja || null,
+        photo: body.photo || null,
+        jabfung_id: '3', // Analis Bangkom jabfung_id as string
+        pendidikan_id: body.pendidikan_id ? String(body.pendidikan_id) : null,
+        status: body.status || 'aktif',
+      };
+
+      await db.insert(pegawai).values(newAnalisBangkom);
+      return { success: true, message: 'Data analis bangkom berhasil ditambahkan' };
     } catch (err) {
-      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menambah data' }));
+      console.error('Insert Error:', err);
+      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menambah data analis bangkom' }));
     }
   }
 

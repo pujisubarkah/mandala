@@ -17,6 +17,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin'
+})
+
 import { ref, computed } from 'vue'
 import VueECharts from 'vue-echarts'
 import * as echarts from 'echarts/core'

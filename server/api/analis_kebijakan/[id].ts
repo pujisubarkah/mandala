@@ -1,14 +1,17 @@
-import { db } from '@/server/database';
+import { db } from '@/server/database'; // Ensure this db is created using drizzle-orm/mysql-core
 import { pegawai } from '@/server/database/schema/pegawai'; // Pastikan schema ini menggunakan field lowercase jabfung_id
-import { jabfung } from '@/server/database/schema/jabfung';
 import { jns_kelamin } from '@/server/database/schema/jns_kelamin';
 import { golongan } from '@/server/database/schema/golongan';
 import { jalur } from '@/server/database/schema/jalur';
 import { jenjang } from '@/server/database/schema/jenjang';
 import { instansi } from '@/server/database/schema/instansi';
 import { pendidikan } from '@/server/database/schema/pendidikan';
-import { eq } from 'drizzle-orm';
+import { jabfung } from '@/server/database/schema/jabfung';
+import { eq, and } from 'drizzle-orm';
 import { readBody, sendError, createError } from 'h3';
+// Make sure your db instance and schema are created using drizzle-orm/mysql-core
+
+// If you are using drizzle-orm/mysql-core, ensure your db and schema are imported from drizzle-orm/mysql-core, not pg-core.
 
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method;
@@ -20,12 +23,14 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'GET') {
     try {
+      // Gunakan nama field konsisten: jabfung_id
       const result = await db
         .select({
           id: pegawai.id,
           nip: pegawai.nip,
           niakn: pegawai.niakn,
           nama: pegawai.nama,
+          status: pegawai.status,
           jns_kelamin: jns_kelamin.jns_kelamin,
           golongan: golongan.golongan,
           jalur_pengangkatan: jalur.jalur_pengangkatan,
@@ -49,14 +54,17 @@ export default defineEventHandler(async (event) => {
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
         .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
-        .where(eq(pegawai.id, Number(id)));
+        .where(and(eq(pegawai.id, Number(id)), eq(pegawai.jabfung_id, '1'), eq(pegawai.status, 'aktif')));
 
       if (!result.length) {
         return sendError(event, createError({ statusCode: 404, statusMessage: 'Data tidak ditemukan' }));
       }
+      
+      // Pastikan semua field yang bisa null di-handle
       const p = result[0];
       return {
         ...p,
+        status: p.status || 'aktif',
         nm_jenjang: p.nm_jenjang || '-',
         nama_instansi: p.nama_instansi || '-',
         pendidikan: p.pendidikan || '-',
@@ -70,6 +78,9 @@ export default defineEventHandler(async (event) => {
         email: p.email || '-',
       };
     } catch (err) {
+      // Log error detail ke console agar mudah debug
+      // eslint-disable-next-line no-console
+      console.error('DB Error:', err);
       return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal mengambil data' }));
     }
   }
@@ -77,18 +88,37 @@ export default defineEventHandler(async (event) => {
   if (method === 'PUT' || method === 'PATCH') {
     try {
       const body = await readBody(event);
-      await db.update(pegawai).set(body).where(eq(pegawai.id, Number(id)));
+      
+      // Convert numeric IDs to strings for foreign keys
+      const updateData = {
+        ...body,
+        jns_kelamin_id: body.jns_kelamin_id ? String(body.jns_kelamin_id) : body.jns_kelamin_id,
+        golongan_id: body.golongan_id ? String(body.golongan_id) : body.golongan_id,
+        jalur_id: body.jalur_id ? String(body.jalur_id) : body.jalur_id,
+        jenjang_id: body.jenjang_id ? String(body.jenjang_id) : body.jenjang_id,
+        instansi_id: body.instansi_id ? String(body.instansi_id) : body.instansi_id,
+        pendidikan_id: body.pendidikan_id ? String(body.pendidikan_id) : body.pendidikan_id,
+        jabfung_id: '1', // Ensure it remains Analis Kebijakan
+        status: body.status || 'aktif'
+      };
+      
+      await db.update(pegawai).set(updateData).where(eq(pegawai.id, Number(id)));
       return { success: true };
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Update Error:', err);
       return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal mengupdate data' }));
     }
   }
 
   if (method === 'DELETE') {
     try {
-      await db.delete(pegawai).where(eq(pegawai.id, Number(id)));
+      // Soft delete by updating status instead of actual deletion
+      await db.update(pegawai).set({ status: 'non_aktif' }).where(eq(pegawai.id, Number(id)));
       return { success: true };
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Delete Error:', err);
       return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menghapus data' }));
     }
   }

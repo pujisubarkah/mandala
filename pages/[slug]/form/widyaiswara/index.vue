@@ -22,12 +22,12 @@
                 </div>
                 <div>
                   <h1 class="text-4xl font-black bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-                    Dashboard Analis Kebijakan
+                    Dashboard Widyaiswara
                   </h1>
                   <p v-if="namaInstansi" class="text-lg text-indigo-700 font-semibold">{{ namaInstansi }}</p>
                 </div>
               </div>
-              <p class="text-gray-700 text-lg font-medium mb-3">Kelola data pegawai Analis Kebijakan secara real-time</p>
+              <p class="text-gray-700 text-lg font-medium mb-3">Kelola data pegawai Widyaiswara secara real-time</p>
               <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2 bg-emerald-100 px-3 py-1 rounded-full">
                   <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -146,7 +146,7 @@
               </div>
               <div>
                 <h3 class="font-black text-2xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  Data Pegawai Analis Kebijakan
+                  Data Pegawai Widyaiswara
                 </h3>
                 <p class="text-sm text-gray-600 font-medium">Kelola dan pantau data pegawai secara real-time</p>
               </div>
@@ -222,7 +222,7 @@
                     idx % 2 === 1 ? 'bg-gradient-to-r from-gray-50/50 to-blue-50/30' : 'bg-white/60',
                     'hover:border-l-4 hover:border-blue-500'
                   ]"
-                  @click="router.push(`/${currentSlug}/form/analis-kebijakan/${row.id}`)"
+                  @click="router.push(`/${currentSlug}/form/widyaiswara/${row.id}`)"
                   :title="`Klik untuk melihat detail ${row.nama}`"
                 >
                   <td class="py-4 px-6 font-bold text-blue-700 group-hover:text-indigo-600 transition-colors">
@@ -428,7 +428,7 @@ onMounted(async () => {
 
   // Fetch pegawai data
   if (instansi_id.value) {
-    const res = await fetch(`/api/analis_kebijakan/instansi?instansi_id=${instansi_id.value}`)
+    const res = await fetch(`/api/widyaiswara/instansi?instansi_id=${instansi_id.value}`)
     pegawai.value = await res.json()
   }
 })
@@ -514,7 +514,7 @@ async function handleAddData() {
   errorAdd.value = ""
   try {
     if (!instansi_id.value) throw new Error("instansi_id tidak ditemukan")
-    const res = await fetch(`/api/analis_kebijakan/instansi`, {
+    const res = await fetch(`/api/widyaiswara/instansi`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -529,7 +529,7 @@ async function handleAddData() {
     showAddModal.value = false
     form.value = { nama: "", nip: "", email: "", jenjang: "Pertama", instansi: "", provinsi: "" }
     // Refresh data
-    const r = await fetch(`/api/analis_kebijakan/instansi?instansi_id=${instansi_id.value}`)
+    const r = await fetch(`/api/widyaiswara/instansi?instansi_id=${instansi_id.value}`)
     pegawai.value = await r.json()
   } catch {
     errorAdd.value = "Gagal menambah data"
@@ -540,7 +540,7 @@ async function handleAddData() {
 
 // Bar chart options
 const barOptions = computed(() => ({
-  title: { text: 'Distribusi AK per Jenjang', left: 'center' },
+  title: { text: 'Distribusi Widyaiswara per Jenjang', left: 'center' },
   tooltip: {},
   xAxis: { type: 'category', data: jenjangData.value.map(j => j.name) },
   yAxis: { type: 'value' },
@@ -555,7 +555,7 @@ const barOptions = computed(() => ({
 
 // Pie chart options
 const pieOptions = computed(() => ({
-  title: { text: 'Proporsi Jenjang AK', left: 'center' },
+  title: { text: 'Proporsi Jenjang Widyaiswara', left: 'center' },
   tooltip: { trigger: 'item' },
   legend: { bottom: 0 },
   series: [{
@@ -587,5 +587,6 @@ const pieOptions = computed(() => ({
   animation: float 3.2s ease-in-out infinite;
 }
 </style>
+
 
 

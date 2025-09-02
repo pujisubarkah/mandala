@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
         .leftJoin(instansi, eq(pegawai.instansi_id, instansi.id))
         .leftJoin(pendidikan, eq(pegawai.pendidikan_id, pendidikan.id))
         .leftJoin(jabfung, eq(pegawai.jabfung_id, jabfung.id))
-        .where(eq(pegawai.jabfung_id, 1));
+        .where(eq(pegawai.jabfung_id, '1'));
       // Pastikan semua field yang bisa null di-handle
       const mapped = result.map(p => ({
         ...p,

@@ -57,13 +57,13 @@ onMounted(async () => {
       nomor_surat: pegawaiRes.nomor_surat || ''
     }
 
-    // Isi opsi dropdown
-    pendidikanOptions.value = pendidikanRes
-    instansiOptions.value = instansiRes
-    jenjangOptions.value = jenjangRes
-    jenisKelaminOptions.value = jenisKelaminRes
-    golonganOptions.value = golonganRes
-    jalurOptions.value = jalurRes
+    // Isi opsi dropdown - handle response structure
+    pendidikanOptions.value = pendidikanRes?.data || pendidikanRes || []
+    instansiOptions.value = instansiRes?.data || instansiRes || []
+    jenjangOptions.value = jenjangRes?.data || jenjangRes || []
+    jenisKelaminOptions.value = jenisKelaminRes?.data || jenisKelaminRes || []
+    golonganOptions.value = golonganRes?.data || golonganRes || []
+    jalurOptions.value = jalurRes?.data || jalurRes || []
     error.value = ''
   } catch (err) {
     error.value = 'Data tidak ditemukan.'
@@ -330,25 +330,124 @@ const FormRowSelect = defineComponent({
                   <FormRow label="Unit Kerja" name="unit_kerja" :value="formData?.unit_kerja" @change="handleChange" icon="mdi:map-marker" :readOnly="!isEditing" />
                   <FormRow label="Email" name="email" :value="formData?.email" @change="handleChange" icon="mdi:email" type="email" :readOnly="!isEditing" />
                   <FormRow label="No. HP" name="phone" :value="formData?.phone" @change="handleChange" icon="mdi:phone" :readOnly="!isEditing" />
-                 
-                  <FormRowSelect
-                    label="Instansi"
-                    name="instansi_id"
-                    :value="formData?.instansi_id"
-                    @change="handleChange"
-                    :options="instansiOptions"
-                    :readOnly="!isEditing"
-                    optionLabel="nama_instansi"
+                  
+                  <!-- Golongan - Custom Field -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Golongan</label>
+                    <div class="relative">
+                      <div v-if="!isEditing" class="w-full px-4 py-2 rounded-lg border bg-gray-100 text-gray-700 flex items-center gap-2">
+                        <Icon icon="mdi:trophy" class="w-5 h-5 text-amber-500" />
+                        <span>{{ formData?.golongan || '-' }}</span>
+                      </div>
+                      <select v-else
+                        name="golongan"
+                        :value="formData?.golongan"
+                        @change="handleChange"
+                        class="w-full px-4 py-2 rounded-lg border text-gray-700 focus:ring-2 focus:ring-blue-300 outline-none transition bg-white hover:border-gray-400 focus:border-blue-500"
+                      >
+                        <option value="">Pilih Golongan</option>
+                        <option v-for="gol in golonganOptions" :key="gol.id" :value="gol.golongan">
+                          {{ gol.golongan }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <FormRow 
+                    label="Instansi" 
+                    name="nama_instansi" 
+                    :value="formData?.nama_instansi" 
+                    @change="handleChange" 
+                    icon="mdi:office-building" 
+                    :readOnly="!isEditing" 
                   />
-                  <FormRowSelect
-                    label="Jenis Kelamin"
-                    name="jns_kelamin_id"
-                    :value="formData?.jns_kelamin_id"
-                    @change="handleChange"
-                    :options="jenisKelaminOptions"
-                    :readOnly="!isEditing"
-                    optionLabel="jns_kelamin"
-                  />
+                  
+                  <!-- Jenjang - Custom Field -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenjang</label>
+                    <div class="relative">
+                      <div v-if="!isEditing" class="w-full px-4 py-2 rounded-lg border bg-gray-100 text-gray-700 flex items-center gap-2">
+                        <Icon icon="mdi:star" class="w-5 h-5 text-yellow-500" />
+                        <span>{{ formData?.nm_jenjang || '-' }}</span>
+                      </div>
+                      <select v-else
+                        name="nm_jenjang"
+                        :value="formData?.nm_jenjang"
+                        @change="handleChange"
+                        class="w-full px-4 py-2 rounded-lg border text-gray-700 focus:ring-2 focus:ring-blue-300 outline-none transition bg-white hover:border-gray-400 focus:border-blue-500"
+                      >
+                        <option value="">Pilih Jenjang</option>
+                        <option v-for="jenj in jenjangOptions" :key="jenj.id" :value="jenj.nm_jenjang">
+                          {{ jenj.nm_jenjang }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Pendidikan - Custom Field -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Pendidikan</label>
+                    <div class="relative">
+                      <div v-if="!isEditing" class="w-full px-4 py-2 rounded-lg border bg-gray-100 text-gray-700 flex items-center gap-2">
+                        <Icon icon="mdi:school" class="w-5 h-5 text-blue-500" />
+                        <span>{{ formData?.pendidikan || '-' }}</span>
+                      </div>
+                      <select v-else
+                        name="pendidikan"
+                        :value="formData?.pendidikan"
+                        @change="handleChange"
+                        class="w-full px-4 py-2 rounded-lg border text-gray-700 focus:ring-2 focus:ring-blue-300 outline-none transition bg-white hover:border-gray-400 focus:border-blue-500"
+                      >
+                        <option value="">Pilih Pendidikan</option>
+                        <option v-for="pend in pendidikanOptions" :key="pend.id" :value="pend.pendidikan">
+                          {{ pend.pendidikan }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Jalur Pengangkatan - Custom Field -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jalur Pengangkatan</label>
+                    <div class="relative">
+                      <div v-if="!isEditing" class="w-full px-4 py-2 rounded-lg border bg-gray-100 text-gray-700 flex items-center gap-2">
+                        <Icon icon="mdi:account-arrow-right" class="w-5 h-5 text-purple-500" />
+                        <span>{{ formData?.jalur_pengangkatan || '-' }}</span>
+                      </div>
+                      <select v-else
+                        name="jalur_pengangkatan"
+                        :value="formData?.jalur_pengangkatan"
+                        @change="handleChange"
+                        class="w-full px-4 py-2 rounded-lg border text-gray-700 focus:ring-2 focus:ring-blue-300 outline-none transition bg-white hover:border-gray-400 focus:border-blue-500"
+                      >
+                        <option value="">Pilih Jalur Pengangkatan</option>
+                        <option v-for="jalur in jalurOptions" :key="jalur.id" :value="jalur.jalur_pengangkatan">
+                          {{ jalur.jalur_pengangkatan }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+                    <div class="relative">
+                      <div v-if="!isEditing" class="w-full px-4 py-2 rounded-lg border bg-gray-100 text-gray-700 flex items-center gap-2">
+                        <Icon :icon="formData?.jns_kelamin === 'Pria' ? 'mdi:gender-male' : 'mdi:gender-female'" 
+                              :class="formData?.jns_kelamin === 'Pria' ? 'text-blue-600' : 'text-pink-600'" 
+                              class="w-5 h-5" />
+                        <span>{{ formData?.jns_kelamin || '-' }}</span>
+                      </div>
+                      <select v-else
+                        name="jns_kelamin"
+                        :value="formData?.jns_kelamin"
+                        @change="handleChange"
+                        class="w-full px-4 py-2 rounded-lg border text-gray-700 focus:ring-2 focus:ring-blue-300 outline-none transition bg-white hover:border-gray-400 focus:border-blue-500"
+                      >
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="Pria">👨 Pria</option>
+                        <option value="Wanita">👩 Wanita</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
 

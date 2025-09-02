@@ -24,6 +24,7 @@ export default defineEventHandler(async (event) => {
         .select({
           id: pegawai.id,
           nip: pegawai.nip,
+          niakn: pegawai.niakn,
           nama: pegawai.nama,
           jns_kelamin: jns_kelamin.jns_kelamin,
           golongan: golongan.golongan,
@@ -33,6 +34,21 @@ export default defineEventHandler(async (event) => {
           pendidikan: pendidikan.pendidikan,
           photo: pegawai.photo,
           jabfung: jabfung.fungsional,
+          phone: pegawai.phone,
+          email: pegawai.email,
+          nomor_surat: pegawai.nomor_surat,
+          tmt_pangkat: pegawai.tmt_pangkat,
+          tmt_surat: pegawai.tmt_surat,
+          unit_kerja: pegawai.unit_kerja,
+          status: pegawai.status,
+          // Include IDs for editing
+          jns_kelamin_id: pegawai.jns_kelamin_id,
+          golongan_id: pegawai.golongan_id,
+          jalur_id: pegawai.jalur_id,
+          jenjang_id: pegawai.jenjang_id,
+          instansi_id: pegawai.instansi_id,
+          pendidikan_id: pegawai.pendidikan_id,
+          jabfung_id: pegawai.jabfung_id,
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -55,6 +71,13 @@ export default defineEventHandler(async (event) => {
         pendidikan: p.pendidikan || '-',
         jabfung: p.jabfung || '-',
         photo: p.nip ? `https://dtjrketxxozstcwvotzh.supabase.co/storage/v1/object/public/foto_pegawai/${p.nip}.jpg` : null,
+        nomor_surat: p.nomor_surat || '-',
+        tmt_pangkat: p.tmt_pangkat || '-',
+        tmt_surat: p.tmt_surat || '-',
+        unit_kerja: p.unit_kerja || '-',
+        phone: p.phone || '-',
+        email: p.email || '-',
+        status: p.status || 'aktif',
       };
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -66,19 +89,46 @@ export default defineEventHandler(async (event) => {
   if (method === 'PUT' || method === 'PATCH') {
     try {
       const body = await readBody(event);
-      await db.update(pegawai).set(body).where(eq(pegawai.id, Number(id)));
-      return { success: true };
+      
+      // Validate and prepare update data
+      const updateData = {
+        ...(body.nip && { nip: body.nip }),
+        ...(body.niakn && { niakn: body.niakn }),
+        ...(body.nama && { nama: body.nama }),
+        ...(body.jns_kelamin_id && { jns_kelamin_id: String(body.jns_kelamin_id) }),
+        ...(body.golongan_id && { golongan_id: String(body.golongan_id) }),
+        ...(body.jalur_id && { jalur_id: String(body.jalur_id) }),
+        ...(body.jenjang_id && { jenjang_id: String(body.jenjang_id) }),
+        ...(body.instansi_id && { instansi_id: String(body.instansi_id) }),
+        ...(body.phone !== undefined && { phone: body.phone }),
+        ...(body.email !== undefined && { email: body.email }),
+        ...(body.nomor_surat !== undefined && { nomor_surat: body.nomor_surat }),
+        ...(body.tmt_pangkat && { tmt_pangkat: body.tmt_pangkat }),
+        ...(body.tmt_surat && { tmt_surat: body.tmt_surat }),
+        ...(body.unit_kerja !== undefined && { unit_kerja: body.unit_kerja }),
+        ...(body.photo !== undefined && { photo: body.photo }),
+        ...(body.pendidikan_id && { pendidikan_id: String(body.pendidikan_id) }),
+        ...(body.status && { status: body.status }),
+      };
+
+      await db.update(pegawai).set(updateData).where(eq(pegawai.id, Number(id)));
+      return { success: true, message: 'Data widyaiswara berhasil diperbarui' };
     } catch (err) {
-      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal mengupdate data' }));
+      console.error('Update Error:', err);
+      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal mengupdate data widyaiswara' }));
     }
   }
 
   if (method === 'DELETE') {
     try {
-      await db.delete(pegawai).where(eq(pegawai.id, Number(id)));
-      return { success: true };
+      // Soft delete by updating status instead of hard delete
+      await db.update(pegawai)
+        .set({ status: 'non_aktif' })
+        .where(eq(pegawai.id, Number(id)));
+      return { success: true, message: 'Data widyaiswara berhasil dinonaktifkan' };
     } catch (err) {
-      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menghapus data' }));
+      console.error('Delete Error:', err);
+      return sendError(event, createError({ statusCode: 500, statusMessage: 'Gagal menghapus data widyaiswara' }));
     }
   }
 
