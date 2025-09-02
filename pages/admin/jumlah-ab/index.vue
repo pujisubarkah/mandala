@@ -155,7 +155,7 @@
                   idx % 2 === 1 ? 'bg-gradient-to-r from-gray-50/50 to-blue-50/30' : 'bg-white/60',
                   'hover:border-l-4 hover:border-blue-500'
                 ]"
-                @click="router.push(`/admin/jumlah-ak/${row.id}`)"
+                @click="router.push(`/admin/jumlah-ab/${row.id}`)"
                 :title="`Klik untuk melihat detail ${row.nama}`"
               >
                 <td class="py-4 px-6 font-bold text-blue-700 group-hover:text-indigo-600 transition-colors">
@@ -170,7 +170,6 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
                       </div>
-                      <div class="text-xs text-gray-500">ID: {{ row.id }} • Klik untuk detail</div>
                     </div>
                   </div>
                 </td>
@@ -191,10 +190,10 @@
                   </span>
                 </td>
                 <td class="py-4 px-6 font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
-                  <div class="max-w-xs truncate">{{ row.unitKerja || '-' }}</div>
+                  <div class="max-w-xs break-words">{{ row.unitKerja || '-' }}</div>
                 </td>
                 <td class="py-4 px-6 font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
-                  <div class="max-w-xs truncate">{{ row.instansi }}</div>
+                  <div class="max-w-xs break-words">{{ row.instansi }}</div>
                 </td>
               </tr>
             </tbody>
