@@ -8,7 +8,8 @@
         <div class="flex flex-col items-center mb-8 text-center">
           <div class="relative group mb-6">
             <div class="relative w-28 h-28">
-              <img src="/logo.png" alt="Logo" class="w-full h-full object-contain aspect-square rounded-lg shadow-sm hover:scale-105 transition-all duration-300 border border-gray-200 bg-white" />
+              <!-- Static Logo -->
+              <img src="/lanri.png" alt="Logo LANRI" class="w-full h-full object-contain aspect-square rounded-lg shadow-sm hover:scale-105 transition-all duration-300" />
             </div>
           </div>
           <div class="mb-4">
@@ -129,6 +130,14 @@ const rememberMe = ref(false);
 const isLoading = ref(false);
 
 const currentSlide = ref(0);
+const currentLogo = ref(0);
+
+const logos = [
+  { src: '/lanri.png', alt: 'Logo LANRI' },
+  { src: '/berakhlak.png', alt: 'Logo BERAKHLAK' },
+  { src: '/bangga.png', alt: 'Logo BANGGA' }
+];
+
 const slides = [
   {
     image: '/LAN_9694.JPG',
@@ -151,13 +160,23 @@ const slides = [
 ];
 
 let timer = null;
+let logoTimer = null;
+
 onMounted(() => {
+  // Timer untuk slide gambar (setiap 5 detik)
   timer = setInterval(() => {
     currentSlide.value = (currentSlide.value + 1) % slides.length;
   }, 5000);
+  
+  // Timer untuk logo rotation (setiap 3 detik)
+  logoTimer = setInterval(() => {
+    currentLogo.value = (currentLogo.value + 1) % logos.length;
+  }, 3000);
 });
+
 onUnmounted(() => {
   clearInterval(timer);
+  clearInterval(logoTimer);
 });
 
 function nextSlide() {

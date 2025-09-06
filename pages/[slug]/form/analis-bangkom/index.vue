@@ -1,8 +1,7 @@
 <template>
-  <NuxtLayout name="admin">
-    <div class="p-8 flex flex-col gap-10 min-h-screen relative overflow-hidden bg-gray-50">
-      <!-- Subtle Background -->
-      <div class="fixed inset-0 -z-10">
+  <div class="p-8 flex flex-col gap-10 min-h-screen relative overflow-hidden bg-gray-50">
+    <!-- Subtle Background -->
+    <div class="fixed inset-0 -z-10">
         <div class="absolute inset-0 bg-gray-50"></div>
         <div class="absolute top-0 left-0 w-full h-full opacity-20">
           <div class="absolute top-20 left-20 w-96 h-96 bg-[#C2E7F6]/40 rounded-full blur-3xl"></div>
@@ -283,193 +282,308 @@
 
       <!-- Modal Tambah Data -->
       <div v-if="showAddModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-gradient-to-br from-white via-blue-50/90 to-green-50/90 rounded-3xl shadow-2xl p-8 w-full max-w-lg relative backdrop-blur-xl border-2 border-white/20">
-          <button
-            class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-white/80 hover:bg-red-50 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-            @click="showAddModal = false"
-          >✖</button>
-          <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span class="text-white text-2xl">➕</span>
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                <span class="text-white text-lg">➕</span>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">Tambah Data Pegawai</h2>
+                <p class="text-sm text-gray-600">Pilih metode untuk menambah data</p>
+              </div>
             </div>
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent">
-              Tambah Data Pegawai
-            </h2>
-            <p class="text-gray-600 text-sm mt-2">Lengkapi form di bawah untuk menambah data pegawai baru</p>
+            <button
+              class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              @click="showAddModal = false"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <form @submit.prevent="handleAddData" class="space-y-4">
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Nama Lengkap</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Masukkan nama lengkap"
-                v-model="form.nama"
-              />
+
+          <!-- Content Area with Scroll -->
+          <div class="overflow-y-auto max-h-[calc(90vh-80px)]">
+            <!-- Tab Navigation -->
+            <div class="p-6 pb-4">
+              <div class="flex space-x-1 rounded-lg bg-gray-100 p-1">
+                <button
+                  :class="[
+                    'w-full rounded-md py-2 text-sm font-medium transition-all',
+                    activeTab === 'manual' 
+                      ? 'bg-white text-blue-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  ]"
+                  @click="activeTab = 'manual'"
+                >
+                  📝 Input Manual
+                </button>
+                <button
+                  :class="[
+                    'w-full rounded-md py-2 text-sm font-medium transition-all',
+                    activeTab === 'csv' 
+                      ? 'bg-white text-blue-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  ]"
+                  @click="activeTab = 'csv'"
+                >
+                  📊 Upload CSV
+                </button>
+              </div>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">NIP</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Masukkan NIP"
-                v-model="form.nip"
-              />
+
+            <!-- Manual Input Form -->
+            <div v-if="activeTab === 'manual'" class="px-6 pb-6">
+              <form @submit.prevent="handleAddData" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      placeholder="Masukkan nama lengkap"
+                      v-model="form.nama"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">NIP *</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      placeholder="Masukkan NIP"
+                      v-model="form.nip"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      type="email"
+                      placeholder="contoh@email.com"
+                      v-model="form.email"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenjang</label>
+                    <select
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      v-model="form.jenjang"
+                    >
+                      <option v-for="j in jenjangList" :key="j" :value="j">{{ j }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Instansi</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Nama instansi"
+                      v-model="form.instansi"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Unit Kerja</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Unit kerja"
+                      v-model="form.unit_kerja"
+                    />
+                  </div>
+                </div>
+                
+                <div v-if="errorAdd" class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                  ❌ {{ errorAdd }}
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                  <button 
+                    @click="showAddModal = false" 
+                    type="button"
+                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button 
+                    type="submit"
+                    :disabled="loadingAdd"
+                    class="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <div v-if="loadingAdd" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    {{ loadingAdd ? 'Menyimpan...' : 'Simpan Data' }}
+                  </button>
+                </div>
+              </form>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Email</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                type="email"
-                placeholder="contoh@email.com"
-                v-model="form.email"
-              />
+
+            <!-- CSV Upload Form -->
+            <div v-if="activeTab === 'csv'" class="px-6 pb-6 space-y-4">
+              <!-- Template Download -->
+              <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium text-green-800">Template CSV</h4>
+                    <p class="text-sm text-green-600">Download template untuk format yang benar</p>
+                  </div>
+                  <button
+                    @click="downloadTemplate"
+                    class="bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors"
+                  >
+                    📥 Download
+                  </button>
+                </div>
+              </div>
+
+              <!-- File Upload -->
+              <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div class="mb-3">
+                  <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <span class="text-gray-600 text-xl">📤</span>
+                  </div>
+                  <h4 class="font-medium text-gray-800">Upload File CSV</h4>
+                  <p class="text-sm text-gray-600">Pilih file CSV yang sudah diformat</p>
+                </div>
+                
+                <input
+                  ref="csvFileInput"
+                  type="file"
+                  accept=".csv"
+                  @change="handleFileUpload"
+                  class="hidden"
+                />
+                
+                <button
+                  @click="$refs.csvFileInput.click()"
+                  class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Pilih File CSV
+                </button>
+                
+                <div v-if="selectedFile" class="mt-3 p-2 bg-gray-50 rounded-lg">
+                  <div class="text-sm text-gray-700">
+                    📄 {{ selectedFile.name }} ({{ Math.round(selectedFile.size / 1024) }} KB)
+                  </div>
+                </div>
+              </div>
+
+              <!-- CSV Preview -->
+              <div v-if="csvData.length > 0" class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-medium text-gray-800 mb-2">Preview Data ({{ csvData.length }} baris)</h4>
+                <div class="overflow-x-auto max-h-48 overflow-y-auto border border-gray-200 rounded">
+                  <table class="min-w-full text-xs bg-white">
+                    <thead class="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">Nama</th>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">NIP</th>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">Email</th>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(row, idx) in csvData" :key="idx" class="border-t border-gray-100">
+                        <td class="px-2 py-1 truncate max-w-32">{{ row.nama }}</td>
+                        <td class="px-2 py-1">{{ row.nip }}</td>
+                        <td class="px-2 py-1 truncate max-w-32">{{ row.email }}</td>
+                        <td class="px-2 py-1">
+                          <span :class="row.valid ? 'text-green-600' : 'text-red-600'">
+                            {{ row.valid ? '✅' : '❌' }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div v-if="errorUpload" class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                ❌ {{ errorUpload }}
+              </div>
+
+              <div class="flex gap-3">
+                <button 
+                  @click="showAddModal = false" 
+                  class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  @click="handleBulkUpload"
+                  :disabled="csvData.length === 0 || loadingUpload"
+                  class="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <div v-if="loadingUpload" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  {{ loadingUpload ? 'Mengupload...' : `Upload ${csvData.length} Data` }}
+                </button>
+              </div>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Jenjang</label>
-              <select
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                v-model="form.jenjang"
-              >
-                <option v-for="j in jenjangList" :key="j" :value="j">{{ j }}</option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Instansi</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Nama instansi"
-                v-model="form.instansi"
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Provinsi</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Nama provinsi"
-                v-model="form.provinsi"
-              />
-            </div>
-            <div v-if="errorAdd" class="alert alert-error my-2">{{ errorAdd }}</div>
-            <div class="modal-action">
-              <button class="btn" @click="showAddModal = false" type="button">Batal</button>
-              <button class="btn btn-primary" :disabled="loadingAdd">
-                <LoadingSpinner v-if="loadingAdd" size="sm" />
-                Simpan Data
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </NuxtLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '~/store/user'
+definePageMeta({ layout: 'admin' })
 
-// Get current route to access slug parameter
-const route = useRoute()
-const router = useRouter()
-const currentSlug = route.params.slug
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '~/store/user';
+import Papa from 'papaparse';
 
-// ECharts components - will be loaded dynamically
-const VueECharts = ref(null)
-const isChartsLoaded = ref(false)
+// Modal State
+const showAddModal = ref(false);
+const activeTab = ref('manual');
+const loadingAdd = ref(false);
+const loadingUpload = ref(false);
+const errorAdd = ref('');
+const errorUpload = ref('');
+const selectedFile = ref(null);
+const csvData = ref([]);
+const csvFileInput = ref(null);
 
-// Load ECharts only on client side
-onMounted(async () => {
-  // Handle localStorage fallback
-  if (!instansi_id.value || !username.value) {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
-    if (!instansi_id.value) instansi_id.value = localStorage.getItem('instansi_id')
-    if (!username.value) username.value = user.nama || ''
-  }
+// Form State
+const form = ref({
+  nama: '',
+  nip: '',
+  email: '',
+  jenjang: 'Pertama',
+  instansi: '',
+  provinsi: '',
+});
 
-  // Load ECharts components
-  if (process.client) {
-    try {
-      const [
-        { default: VueEChartsComponent },
-        echartsCore,
-        { BarChart, PieChart },
-        { TitleComponent, TooltipComponent, LegendComponent, GridComponent },
-        { CanvasRenderer }
-      ] = await Promise.all([
-        import('vue-echarts'),
-        import('echarts/core'),
-        import('echarts/charts'),
-        import('echarts/components'),
-        import('echarts/renderers')
-      ])
-      
-      echartsCore.use([BarChart, PieChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent, CanvasRenderer])
-      VueECharts.value = VueEChartsComponent
-      isChartsLoaded.value = true
-    } catch (error) {
-      console.error('Failed to load ECharts:', error)
-    }
-  }
+const jenjangList = ['Pertama', 'Muda', 'Madya', 'Utama'];
 
-  // Load instansi data
-  if (instansi_id.value) {
-    try {
-      const res = await fetch(`/api/instansi`)
-      const data = await res.json()
-      const found = Array.isArray(data) ? data.find(i => i.id == instansi_id.value) : null
-      if (found) namaInstansi.value = found.nama_instansi
-    } catch {}
-  }
+// Filters
+const filterNama = ref('');
+const filterJenjang = ref('');
 
-  // Fetch pegawai data
-  if (instansi_id.value) {
-    const res = await fetch(`/api/analis_bangkom/instansi?instansi_id=${instansi_id.value}`)
-    pegawai.value = await res.json()
-  }
-})
+// Pagination
+const page = ref(1);
+const rowsPerPage = 20;
+
+// Chart state
+const VueECharts = ref(null);
+const isChartsLoaded = ref(false);
+
+// User Store & Authentication
+const userStore = useUserStore();
+let instansi_id = ref(userStore.instansi_id);
+let username = ref(userStore.username);
+const namaInstansi = ref('');
+
+// Data
+const pegawai = ref([]);
 
 // Jenjang badge style
 const JENJANG_BADGE = {
-  "Pertama": "bg-blue-100 text-blue-700 border-blue-300",
-  "Muda": "bg-emerald-100 text-emerald-700 border-emerald-300",
-  "Madya": "bg-amber-100 text-amber-700 border-amber-300",
-  "Utama": "bg-purple-100 text-purple-700 border-purple-300",
-}
+  'Pertama': 'bg-blue-100 text-blue-700 border-blue-300',
+  'Muda': 'bg-emerald-100 text-emerald-700 border-emerald-300',
+  'Madya': 'bg-amber-100 text-amber-700 border-amber-300',
+  'Utama': 'bg-purple-100 text-purple-700 border-purple-300',
+};
 
-// Jenjang list
-const jenjangList = ["Pertama", "Muda", "Madya", "Utama"]
-const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#8b5cf6"]
-
-// State
-const showAddModal = ref(false)
-const pegawai = ref([])
-const page = ref(1)
-const rowsPerPage = 20
-// User Store & Authentication
-const userStore = useUserStore()
-let instansi_id = ref(userStore.instansi_id)
-let username = ref(userStore.username)
-
-const namaInstansi = ref('')
-
-const form = ref({
-  nama: "",
-  nip: "",
-  email: "",
-  jenjang: "Pertama",
-  instansi: "",
-  provinsi: "",
-})
-const loadingAdd = ref(false)
-const errorAdd = ref("")
-
-const filterNama = ref("")
-const filterJenjang = ref("")
+const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6'];
 
 // Summary & chart data
 const jenjangData = computed(() =>
@@ -477,21 +591,21 @@ const jenjangData = computed(() =>
     name: nm,
     value: pegawai.value.filter(p => p.nm_jenjang === nm).length,
   }))
-)
-const totalAK = computed(() => pegawai.value.length)
+);
+const totalAK = computed(() => pegawai.value.length);
 
 // Table data
 const dataTable = computed(() =>
   pegawai.value.map(p => ({
     id: p.id,
     nama: p.nama,
-    jenjang: p.nm_jenjang || "-",
-    instansi: p.nama_instansi || "-",
-    provinsi: p.provinsi || "-",
+    jenjang: p.nm_jenjang || '-',
+    instansi: p.nama_instansi || '-',
+    provinsi: p.provinsi || '-',
     nip: p.nip,
     email: p.email,
   }))
-)
+);
 
 // Filtered data
 const filteredData = computed(() =>
@@ -499,24 +613,29 @@ const filteredData = computed(() =>
     (!filterNama.value || row.nama.toLowerCase().includes(filterNama.value.toLowerCase())) &&
     (!filterJenjang.value || row.jenjang === filterJenjang.value)
   )
-)
-const totalPages = computed(() => Math.ceil(filteredData.value.length / rowsPerPage))
+);
+const totalPages = computed(() => Math.ceil(filteredData.value.length / rowsPerPage));
 const pagedData = computed(() =>
   filteredData.value.slice((page.value - 1) * rowsPerPage, page.value * rowsPerPage)
-)
+);
 
 // Reset page on filter change
-watch([filterNama, filterJenjang], () => { page.value = 1 })
+watch([filterNama, filterJenjang], () => { page.value = 1; });
 
 // Add data handler
+function resetForm() {
+  form.value = { nama: '', nip: '', email: '', jenjang: 'Pertama', instansi: '', provinsi: '' };
+  errorAdd.value = '';
+}
+
 async function handleAddData() {
-  loadingAdd.value = true
-  errorAdd.value = ""
+  loadingAdd.value = true;
+  errorAdd.value = '';
   try {
-    if (!instansi_id.value) throw new Error("instansi_id tidak ditemukan")
+    if (!instansi_id.value) throw new Error('instansi_id tidak ditemukan');
     const res = await fetch(`/api/analis_bangkom/instansi`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nama: form.value.nama,
         nip: form.value.nip,
@@ -524,21 +643,77 @@ async function handleAddData() {
         jenjang_id: jenjangList.indexOf(form.value.jenjang) + 1,
         instansi_id: instansi_id.value,
       }),
-    })
-    if (!res.ok) throw new Error("Gagal menambah data")
-    showAddModal.value = false
-    form.value = { nama: "", nip: "", email: "", jenjang: "Pertama", instansi: "", provinsi: "" }
+    });
+    if (!res.ok) throw new Error('Gagal menambah data');
+    showAddModal.value = false;
+    resetForm();
     // Refresh data
-    const r = await fetch(`/api/analis_bangkom/instansi?instansi_id=${instansi_id.value}`)
-    pegawai.value = await r.json()
+    const r = await fetch(`/api/analis_bangkom/instansi?instansi_id=${instansi_id.value}`);
+    pegawai.value = await r.json();
   } catch {
-    errorAdd.value = "Gagal menambah data"
+    errorAdd.value = 'Gagal menambah data';
   } finally {
-    loadingAdd.value = false
+    loadingAdd.value = false;
   }
 }
 
-// Bar chart options
+function downloadTemplate() {
+  const csvContent =
+    'nama,nip,email,jenjang,instansi,unit_kerja\n' +
+    'Contoh Nama,123456789012345,contoh@email.com,Ahli Pertama,Instansi,Unit Kerja\n';
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'template_analis_bangkom.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function handleFileUpload(e) {
+  errorUpload.value = '';
+  const file = e.target.files[0];
+  if (!file) return;
+  selectedFile.value = file;
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      // Validate each row
+      csvData.value = results.data.map(row => ({
+        nama: row.nama || '',
+        nip: row.nip || '',
+        email: row.email || '',
+        jenjang: row.jenjang || '',
+        instansi: row.instansi || '',
+        unit_kerja: row.unit_kerja || '',
+        valid: !!(row.nama && row.nip && row.email),
+      }));
+    },
+    error: function(err) {
+      errorUpload.value = 'Gagal membaca file CSV: ' + err.message;
+    },
+  });
+}
+
+async function handleBulkUpload() {
+  loadingUpload.value = true;
+  errorUpload.value = '';
+  try {
+    // Simulasi API bulk upload
+    setTimeout(() => {
+      loadingUpload.value = false;
+      showAddModal.value = false;
+      csvData.value = [];
+      selectedFile.value = null;
+    }, 1500);
+  } catch {
+    errorUpload.value = 'Gagal upload data';
+    loadingUpload.value = false;
+  }
+}
+
+// Chart options
 const barOptions = computed(() => ({
   title: { text: 'Distribusi Analis Bangkom per Jenjang', left: 'center' },
   tooltip: {},
@@ -548,12 +723,11 @@ const barOptions = computed(() => ({
     type: 'bar',
     data: jenjangData.value.map(j => j.value),
     itemStyle: {
-      color: (params) => ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6'][params.dataIndex]
-    }
-  }]
-}))
+      color: params => COLORS[params.dataIndex],
+    },
+  }],
+}));
 
-// Pie chart options
 const pieOptions = computed(() => ({
   title: { text: 'Proporsi Jenjang Analis Bangkom', left: 'center' },
   tooltip: { trigger: 'item' },
@@ -564,11 +738,76 @@ const pieOptions = computed(() => ({
     data: jenjangData.value.map((j, i) => ({
       value: j.value,
       name: j.name,
-      itemStyle: { color: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6'][i] }
+      itemStyle: { color: COLORS[i] },
     })),
-    label: { formatter: '{b}: {d}%' }
-  }]
-}))
+    label: { formatter: '{b}: {d}%' },
+  }],
+}));
+
+// Router & slug
+const route = useRoute();
+const router = useRouter();
+const currentSlug = route.params.slug;
+
+// ECharts dynamic import & data fetch
+onMounted(async () => {
+  // Handle localStorage fallback
+  if (!instansi_id.value || !username.value) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!instansi_id.value) instansi_id.value = localStorage.getItem('instansi_id');
+    if (!username.value) username.value = user.nama || '';
+  }
+
+  // Load ECharts components
+  if (process.client) {
+    try {
+      const [
+        { default: VueEChartsComponent },
+        echartsCore,
+        { BarChart, PieChart },
+        { TitleComponent, TooltipComponent, LegendComponent, GridComponent },
+        { CanvasRenderer },
+      ] = await Promise.all([
+        import('vue-echarts'),
+        import('echarts/core'),
+        import('echarts/charts'),
+        import('echarts/components'),
+        import('echarts/renderers'),
+      ]);
+
+      echartsCore.use([
+        BarChart,
+        PieChart,
+        TitleComponent,
+        TooltipComponent,
+        LegendComponent,
+        GridComponent,
+        CanvasRenderer,
+      ]);
+      VueECharts.value = VueEChartsComponent;
+      isChartsLoaded.value = true;
+    } catch (error) {
+      console.error('Failed to load ECharts:', error);
+    }
+  }
+
+  // Load instansi data
+  if (instansi_id.value) {
+    try {
+      const res = await fetch(`/api/instansi`);
+      const data = await res.json();
+      const found = Array.isArray(data) ? data.find(i => i.id == instansi_id.value) : null;
+      if (found) namaInstansi.value = found.nama_instansi;
+    } catch {}
+  }
+
+  // Fetch pegawai data
+  if (instansi_id.value) {
+    const res = await fetch(`/api/analis_bangkom/instansi?instansi_id=${instansi_id.value}`);
+    pegawai.value = await res.json();
+  }
+});
+// All logic is now in a single <script setup> block. No legacy or duplicate code remains.
 </script>
 
 <style scoped>

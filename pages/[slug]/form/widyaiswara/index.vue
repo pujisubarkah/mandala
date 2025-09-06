@@ -1,5 +1,4 @@
 <template>
-  <NuxtLayout name="admin">
     <div class="p-8 flex flex-col gap-10 min-h-screen relative overflow-hidden bg-gray-50">
       <!-- Subtle Background -->
       <div class="fixed inset-0 -z-10">
@@ -42,7 +41,7 @@
             <div class="hidden lg:flex items-center gap-6">
               <div class="text-center">
                 <div class="text-5xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{{ totalAK }}</div>
-                <div class="text-sm text-gray-600 font-medium">Total Pegawai</div>
+                <div class="text-sm text-gray-600 font-medium">Total Widyaiswara</div>
                 <div class="text-xs text-emerald-600 font-semibold mt-1 flex items-center justify-center gap-1">
                   <span>📈</span> Active
                 </div>
@@ -283,92 +282,250 @@
 
       <!-- Modal Tambah Data -->
       <div v-if="showAddModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-gradient-to-br from-white via-blue-50/90 to-green-50/90 rounded-3xl shadow-2xl p-8 w-full max-w-lg relative backdrop-blur-xl border-2 border-white/20">
-          <button
-            class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-white/80 hover:bg-red-50 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-            @click="showAddModal = false"
-          >✖</button>
-          <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span class="text-white text-2xl">➕</span>
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                <span class="text-white text-lg">➕</span>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">Tambah Data Pegawai</h2>
+                <p class="text-sm text-gray-600">Pilih metode untuk menambah data</p>
+              </div>
             </div>
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent">
-              Tambah Data Pegawai
-            </h2>
-            <p class="text-gray-600 text-sm mt-2">Lengkapi form di bawah untuk menambah data pegawai baru</p>
+            <button
+              class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              @click="showAddModal = false"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <form @submit.prevent="handleAddData" class="space-y-4">
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Nama Lengkap</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Masukkan nama lengkap"
-                v-model="form.nama"
-              />
+
+          <!-- Content Area with Scroll -->
+          <div class="overflow-y-auto max-h-[calc(90vh-80px)]">
+            <!-- Tab Navigation -->
+            <div class="p-6 pb-4">
+              <div class="flex space-x-1 rounded-lg bg-gray-100 p-1">
+                <button
+                  :class="[
+                    'w-full rounded-md py-2 text-sm font-medium transition-all',
+                    activeTab === 'manual' 
+                      ? 'bg-white text-blue-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  ]"
+                  @click="activeTab = 'manual'"
+                >
+                  📝 Input Manual
+                </button>
+                <button
+                  :class="[
+                    'w-full rounded-md py-2 text-sm font-medium transition-all',
+                    activeTab === 'csv' 
+                      ? 'bg-white text-blue-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  ]"
+                  @click="activeTab = 'csv'"
+                >
+                  📊 Upload CSV
+                </button>
+              </div>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">NIP</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Masukkan NIP"
-                v-model="form.nip"
-              />
+
+            <!-- Manual Input Form -->
+            <div v-if="activeTab === 'manual'" class="px-6 pb-6">
+              <form @submit.prevent="handleAddData" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      placeholder="Masukkan nama lengkap"
+                      v-model="form.nama"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">NIP *</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      placeholder="Masukkan NIP"
+                      v-model="form.nip"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      type="email"
+                      placeholder="contoh@email.com"
+                      v-model="form.email"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenjang</label>
+                    <select
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      v-model="form.jenjang"
+                    >
+                      <option v-for="j in jenjangList" :key="j" :value="j">{{ j }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Instansi</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Nama instansi"
+                      v-model="form.instansi"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Unit Kerja</label>
+                    <input
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Unit kerja"
+                      v-model="form.unit_kerja"
+                    />
+                  </div>
+                </div>
+                
+                <div v-if="errorAdd" class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                  ❌ {{ errorAdd }}
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                  <button 
+                    @click="showAddModal = false" 
+                    type="button"
+                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button 
+                    type="submit"
+                    :disabled="loadingAdd"
+                    class="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <div v-if="loadingAdd" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    {{ loadingAdd ? 'Menyimpan...' : 'Simpan Data' }}
+                  </button>
+                </div>
+              </form>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Email</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                type="email"
-                placeholder="contoh@email.com"
-                v-model="form.email"
-              />
+
+            <!-- CSV Upload Form -->
+            <div v-if="activeTab === 'csv'" class="px-6 pb-6 space-y-4">
+              <!-- Template Download -->
+              <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium text-green-800">Template CSV</h4>
+                    <p class="text-sm text-green-600">Download template untuk format yang benar</p>
+                  </div>
+                  <button
+                    @click="downloadTemplate"
+                    class="bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors"
+                  >
+                    📥 Download
+                  </button>
+                </div>
+              </div>
+
+              <!-- File Upload -->
+              <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div class="mb-3">
+                  <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <span class="text-gray-600 text-xl">📤</span>
+                  </div>
+                  <h4 class="font-medium text-gray-800">Upload File CSV</h4>
+                  <p class="text-sm text-gray-600">Pilih file CSV yang sudah diformat</p>
+                </div>
+                
+                <input
+                  ref="csvFileInput"
+                  type="file"
+                  accept=".csv"
+                  @change="handleFileUpload"
+                  class="hidden"
+                />
+                
+                <button
+                  @click="$refs.csvFileInput.click()"
+                  class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Pilih File CSV
+                </button>
+                
+                <div v-if="selectedFile" class="mt-3 p-2 bg-gray-50 rounded-lg">
+                  <div class="text-sm text-gray-700">
+                    📄 {{ selectedFile.name }} ({{ Math.round(selectedFile.size / 1024) }} KB)
+                  </div>
+                </div>
+              </div>
+
+              <!-- CSV Preview -->
+              <div v-if="csvData.length > 0" class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-medium text-gray-800 mb-2">Preview Data ({{ csvData.length }} baris)</h4>
+                <div class="overflow-x-auto max-h-48 overflow-y-auto border border-gray-200 rounded">
+                  <table class="min-w-full text-xs bg-white">
+                    <thead class="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">Nama</th>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">NIP</th>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">Email</th>
+                        <th class="px-2 py-1 text-left font-medium text-gray-700">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(row, idx) in csvData" :key="idx" class="border-t border-gray-100">
+                        <td class="px-2 py-1 truncate max-w-32">{{ row.nama }}</td>
+                        <td class="px-2 py-1">{{ row.nip }}</td>
+                        <td class="px-2 py-1 truncate max-w-32">{{ row.email }}</td>
+                        <td class="px-2 py-1">
+                          <span :class="row.valid ? 'text-green-600' : 'text-red-600'">
+                            {{ row.valid ? '✅' : '❌' }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div v-if="errorUpload" class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                ❌ {{ errorUpload }}
+              </div>
+
+              <div class="flex gap-3">
+                <button 
+                  @click="showAddModal = false" 
+                  class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  @click="handleBulkUpload"
+                  :disabled="csvData.length === 0 || loadingUpload"
+                  class="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <div v-if="loadingUpload" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  {{ loadingUpload ? 'Mengupload...' : `Upload ${csvData.length} Data` }}
+                </button>
+              </div>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Jenjang</label>
-              <select
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                v-model="form.jenjang"
-              >
-                <option v-for="j in jenjangList" :key="j" :value="j">{{ j }}</option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Instansi</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Nama instansi"
-                v-model="form.instansi"
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-semibold text-gray-700">Provinsi</label>
-              <input
-                class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-                required
-                placeholder="Nama provinsi"
-                v-model="form.provinsi"
-              />
-            </div>
-            <div v-if="errorAdd" class="alert alert-error my-2">{{ errorAdd }}</div>
-            <div class="modal-action">
-              <button class="btn" @click="showAddModal = false" type="button">Batal</button>
-              <button class="btn btn-primary" :disabled="loadingAdd">
-                <LoadingSpinner v-if="loadingAdd" size="sm" />
-                Simpan Data
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </NuxtLayout>
 </template>
 
 <script setup>
+definePageMeta({ layout: 'admin' })
+
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '~/store/user'
@@ -450,6 +607,15 @@ const showAddModal = ref(false)
 const pegawai = ref([])
 const page = ref(1)
 const rowsPerPage = 20
+
+// Tab state for modal
+const activeTab = ref('manual')
+
+// CSV Upload state
+const selectedFile = ref(null)
+const csvData = ref([])
+const loadingUpload = ref(false)
+const errorUpload = ref('')
 // User Store & Authentication
 const userStore = useUserStore()
 let instansi_id = ref(userStore.instansi_id)
@@ -463,7 +629,7 @@ const form = ref({
   email: "",
   jenjang: "Pertama",
   instansi: "",
-  provinsi: "",
+  unit_kerja: "",
 })
 const loadingAdd = ref(false)
 const errorAdd = ref("")
@@ -527,7 +693,7 @@ async function handleAddData() {
     })
     if (!res.ok) throw new Error("Gagal menambah data")
     showAddModal.value = false
-    form.value = { nama: "", nip: "", email: "", jenjang: "Pertama", instansi: "", provinsi: "" }
+    form.value = { nama: "", nip: "", email: "", jenjang: "Pertama", instansi: "", unit_kerja: "" }
     // Refresh data
     const r = await fetch(`/api/widyaiswara/instansi?instansi_id=${instansi_id.value}`)
     pegawai.value = await r.json()
@@ -535,6 +701,139 @@ async function handleAddData() {
     errorAdd.value = "Gagal menambah data"
   } finally {
     loadingAdd.value = false
+  }
+}
+
+// CSV Template download
+function downloadTemplate() {
+  const headers = ['nama', 'nip', 'niakn', 'email', 'phone', 'jenjang', 'golongan', 'jalur_pengangkatan', 'pendidikan', 'unit_kerja', 'nomor_surat', 'tmt_pangkat', 'tmt_surat', 'status']
+  const sampleData = [
+    'John Doe,198501010001,ABC123,john@email.com,081234567890,Pertama,III/a,CPNS,S1,Unit Kerja A,001/2024,2024-01-01,2024-01-01,aktif',
+    'Jane Smith,198602020002,DEF456,jane@email.com,081234567891,Muda,III/b,PNS,S2,Unit Kerja B,002/2024,2024-02-01,2024-02-01,aktif'
+  ]
+  
+  const csvContent = [headers.join(','), ...sampleData].join('\n')
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = 'template_analis_kebijakan.csv'
+  link.click()
+}
+
+// File upload handler
+function handleFileUpload(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  if (!file.name.toLowerCase().endsWith('.csv')) {
+    errorUpload.value = 'File harus berformat CSV'
+    return
+  }
+  
+  selectedFile.value = file
+  parseCSV(file)
+}
+
+// CSV Parser
+function parseCSV(file) {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    try {
+      const text = e.target.result
+      const lines = text.split('\n').filter(line => line.trim())
+      
+      if (lines.length < 2) {
+        errorUpload.value = 'File CSV harus memiliki header dan minimal 1 baris data'
+        return
+      }
+      
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
+      const requiredFields = ['nama', 'nip', 'email']
+      
+      // Check required fields
+      const missingFields = requiredFields.filter(field => !headers.includes(field))
+      if (missingFields.length > 0) {
+        errorUpload.value = `Field wajib tidak ditemukan: ${missingFields.join(', ')}`
+        return
+      }
+      
+      const data = []
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim())
+        if (values.length !== headers.length) continue
+        
+        const row = {}
+        headers.forEach((header, index) => {
+          row[header] = values[index] || ''
+        })
+        
+        // Validation
+        const valid = row.nama && row.nip && row.email && 
+                     row.email.includes('@') && 
+                     row.nip.length >= 8
+        
+        data.push({
+          ...row,
+          jenjang: row.jenjang || 'Pertama',
+          status: row.status || 'aktif',
+          valid
+        })
+      }
+      
+      csvData.value = data
+      errorUpload.value = ''
+      
+    } catch (error) {
+      errorUpload.value = 'Gagal memproses file CSV. Pastikan format file benar.'
+    }
+  }
+  reader.readAsText(file)
+}
+
+// Bulk upload handler
+async function handleBulkUpload() {
+  loadingUpload.value = true
+  errorUpload.value = ''
+  
+  try {
+    const validData = csvData.value.filter(row => row.valid)
+    if (validData.length === 0) {
+      throw new Error('Tidak ada data valid untuk diupload')
+    }
+    
+    const res = await fetch('/api/widyaiswara/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        data: validData,
+        instansi_id: instansi_id.value
+      })
+    })
+    
+    if (!res.ok) {
+      const error = await res.json()
+      throw new Error(error.message || 'Gagal mengupload data')
+    }
+    
+    const result = await res.json()
+    
+    // Reset state
+    showAddModal.value = false
+    activeTab.value = 'manual'
+    selectedFile.value = null
+    csvData.value = []
+    
+    // Refresh data
+    const r = await fetch(`/api/widyaiswara/instansi?instansi_id=${instansi_id.value}`)
+    pegawai.value = await r.json()
+    
+    // Show success message (you can implement toast notification here)
+    alert(`Berhasil mengupload ${result.inserted} data dari ${validData.length} data valid`)
+    
+  } catch (error) {
+    errorUpload.value = error.message
+  } finally {
+    loadingUpload.value = false
   }
 }
 
@@ -587,6 +886,5 @@ const pieOptions = computed(() => ({
   animation: float 3.2s ease-in-out infinite;
 }
 </style>
-
 
 

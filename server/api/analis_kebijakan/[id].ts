@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
           tmt_pangkat: pegawai.tmt_pangkat,
           tmt_surat: pegawai.tmt_surat,
           unit_kerja: pegawai.unit_kerja,
+       
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -76,6 +77,7 @@ export default defineEventHandler(async (event) => {
         unit_kerja: p.unit_kerja || '-',
         phone: p.phone || '-',
         email: p.email || '-',
+     
       };
     } catch (err) {
       // Log error detail ke console agar mudah debug

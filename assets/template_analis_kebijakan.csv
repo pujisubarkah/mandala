@@ -1,0 +1,11 @@
+nip,niakn,nama,jns_kelamin_id,golongan_id,jalur_id,jenjang_id,instansi_id,phone,email,nomor_surat,tmt_pangkat,tmt_surat,unit_kerja,photo,jabfung_id,pendidikan_id,status
+"1980123456780001","123456","Budi Santoso","1","2","1","3","12","08123456789","budi@email.com","SK-2023-001","2023-01-01","2023-01-01","Biro Perencanaan","","1","5","aktif"
+"1981123456780002","123457","Siti Aminah","2","3","2","2","15","08129876543","siti@email.com","SK-2023-002","2023-02-01","2023-02-01","Bagian Hukum","","1","4","aktif"
+
+# Petunjuk:
+# - Semua kolom wajib diisi dengan tipe text/string, termasuk nip dan id-id.
+# - Kolom id (misal jenjang_id, golongan_id, dll) gunakan kode sesuai referensi sistem.
+# - Format tanggal: YYYY-MM-DD.
+# - Jika tidak ada foto, biarkan kolom photo kosong.
+# - status: "aktif", "non_aktif", "pensiun", atau "mutasi".
+# - Untuk referensi id, cek mapping di aplikasi atau minta ke admin.

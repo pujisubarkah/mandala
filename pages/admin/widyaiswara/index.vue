@@ -38,22 +38,6 @@
       </div>
     </div>
 
-    <!-- Floating Add Button -->
-    <button
-      class="fixed bottom-8 right-8 z-50 group"
-      @click="showAddModal = true"
-    >
-      <div class="relative flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105">
-        <span class="text-2xl">➕</span>
-        <span class="hidden sm:block">Tambah Data</span>
-      </div>
-      <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-        <div class="bg-gray-800/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg">
-          Klik untuk menambah pegawai baru
-        </div>
-        <div class="w-2 h-2 bg-gray-800/90 transform rotate-45 -mt-1 mx-auto"></div>
-      </div>
-    </button>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-5 gap-6 mb-8">
@@ -217,89 +201,6 @@
       >Next</button>
     </div>
 
-    <!-- Modal Tambah Data -->
-    <div v-if="showAddModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div class="bg-gradient-to-br from-white via-blue-50/90 to-green-50/90 rounded-3xl shadow-2xl p-8 w-full max-w-lg relative backdrop-blur-xl border-2 border-white/20">
-        <button
-          class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-white/80 hover:bg-red-50 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-          @click="showAddModal = false"
-        >✖</button>
-        <div class="text-center mb-6">
-          <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span class="text-white text-2xl">➕</span>
-          </div>
-          <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent">
-            Tambah Data Pegawai
-          </h2>
-          <p class="text-gray-600 text-sm mt-2">Lengkapi form di bawah untuk menambah data pegawai baru</p>
-        </div>
-        <form @submit.prevent="handleAddData" class="space-y-4">
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Nama Lengkap</label>
-            <input
-              class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-              required
-              placeholder="Masukkan nama lengkap"
-              v-model="form.nama"
-            />
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">NIP</label>
-            <input
-              class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-              required
-              placeholder="Masukkan NIP"
-              v-model="form.nip"
-            />
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Email</label>
-            <input
-              class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-              required
-              type="email"
-              placeholder="contoh@email.com"
-              v-model="form.email"
-            />
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Jenjang</label>
-            <select
-              class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-              v-model="form.jenjang"
-            >
-              <option v-for="j in jenjangList" :key="j" :value="j">{{ j }}</option>
-            </select>
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Instansi</label>
-            <input
-              class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-              required
-              placeholder="Nama instansi"
-              v-model="form.instansi"
-            />
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Provinsi</label>
-            <input
-              class="w-full border-2 border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-300/30 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
-              required
-              placeholder="Nama provinsi"
-              v-model="form.provinsi"
-            />
-          </div>
-          <div v-if="errorAdd" class="alert alert-error my-2">{{ errorAdd }}</div>
-          <div class="modal-action">
-            <button class="btn" @click="showAddModal = false" type="button">Batal</button>
-            <button class="btn btn-primary" :disabled="loadingAdd">
-              <LoadingSpinner v-if="loadingAdd" size="sm" />
-              Simpan Data
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
 </template>
 

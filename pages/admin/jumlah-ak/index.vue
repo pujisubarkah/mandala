@@ -38,22 +38,6 @@
       </div>
     </div>
 
-    <!-- Floating Add Button -->
-    <button
-      class="fixed bottom-8 right-8 z-50 group"
-      @click="showAddModal = true"
-    >
-      <div class="relative flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105">
-        <span class="text-2xl">➕</span>
-        <span class="hidden sm:block">Tambah Data</span>
-      </div>
-      <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-        <div class="bg-gray-800/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg">
-          Klik untuk menambah pegawai baru
-        </div>
-        <div class="w-2 h-2 bg-gray-800/90 transform rotate-45 -mt-1 mx-auto"></div>
-      </div>
-    </button>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-5 gap-6 mb-8">
@@ -129,8 +113,16 @@
             <option value="">🎯 Semua Jenjang</option>
             <option v-for="j in jenjangList" :key="j" :value="j">⭐ {{ j }}</option>
           </select>
+          <select
+            class="relative px-4 py-3 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 text-purple-900 bg-white/90 shadow-lg font-medium transition-all duration-300 hover:shadow-xl cursor-pointer"
+            v-model="filterInstansi"
+            style="min-width: 200px"
+          >
+            <option value="">🏛️ Semua Instansi</option>
+            <option v-for="i in instansiList" :key="i" :value="i">🏢 {{ i }}</option>
+          </select>
           <button
-            @click="filterNama = ''; filterJenjang = ''"
+            @click="filterNama = ''; filterJenjang = ''; filterInstansi = ''"
             class="relative px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-bold rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105"
           >
             ✨ Reset Filter
@@ -398,9 +390,16 @@ const dataTable = computed(() =>
 const filteredData = computed(() =>
   dataTable.value.filter(row =>
     (!filterNama.value || row.nama.toLowerCase().includes(filterNama.value.toLowerCase())) &&
-    (!filterJenjang.value || row.jenjang === filterJenjang.value)
+    (!filterJenjang.value || row.jenjang === filterJenjang.value) &&
+    (!filterInstansi.value || row.instansi === filterInstansi.value)
   )
 )
+const filterInstansi = ref("");
+const instansiList = computed(() => {
+  // Get unique instansi names from dataTable
+  const set = new Set(dataTable.value.map(row => row.instansi).filter(i => i && i !== "-"));
+  return Array.from(set);
+});
 const totalPages = computed(() => Math.ceil(filteredData.value.length / rowsPerPage))
 const pagedData = computed(() =>
   filteredData.value.slice((page.value - 1) * rowsPerPage, page.value * rowsPerPage)

@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
           tmt_pangkat: pegawai.tmt_pangkat,
           tmt_surat: pegawai.tmt_surat,
           unit_kerja: pegawai.unit_kerja,
+          status: pegawai.status,
         })
         .from(pegawai)
         .leftJoin(jns_kelamin, eq(pegawai.jns_kelamin_id, jns_kelamin.id))
@@ -63,6 +64,7 @@ export default defineEventHandler(async (event) => {
         unit_kerja: p.unit_kerja || '-',
         phone: p.phone || '-',
         email: p.email || '-',
+        status: p.status || 'aktif',
       }));
       return mapped;
     } catch (err) {

@@ -180,48 +180,65 @@
       </div>
     </div>
 
-    <!-- Top Instansi Table -->
+    <!-- Prediksi Kenaikan Jabatan Fungsional Analis Kebijakan 2026 - 2030 -->
     <div class="overflow-x-auto rounded-2xl shadow-2xl mt-8">
       <h4 class="font-black text-xl mb-4 text-emerald-700 flex items-center gap-2">
         <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-        📋 Detail Data per Instansi
+        🏆 Prediksi Kenaikan Jabatan Fungsional Analis Kebijakan 2026 - 2030
       </h4>
       <table class="min-w-full text-left border-collapse bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg">
         <thead>
           <tr class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white">
-            <th class="py-4 px-6 font-bold text-sm tracking-wider">🏛️ Instansi</th>
-            <th class="py-4 px-6 font-bold text-sm tracking-wider text-right">👥 Total AK</th>
+            <th class="py-4 px-6 font-bold text-sm tracking-wider">Jenjang</th>
+            <th v-for="tahun in [2026,2027,2028,2029,2030]" :key="tahun" class="py-4 px-6 font-bold text-sm tracking-wider text-center">{{ tahun }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, idx) in provinsiData" :key="row.provinsi"
-            :class=" [
-              'group transition-all duration-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:shadow-lg hover:scale-[1.01] cursor-pointer',
-              idx % 2 === 0 ? 'bg-white/60' : 'bg-gradient-to-r from-gray-50/50 to-emerald-50/30'
-            ]"
-          >
-            <td class="py-4 px-6 font-bold text-gray-700 group-hover:text-emerald-600 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                  {{ idx + 1 }}
-                </div>
-                <div class="max-w-xs truncate">{{ row.provinsi }}</div>
-              </div>
-            </td>
-            <td class="py-4 px-6 text-right font-black text-emerald-700 group-hover:text-teal-600 transition-colors text-lg">
-              {{ row.total }}
-            </td>
-          </tr>
-          <tr class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black">
-            <td class="py-4 px-6 text-right font-black text-lg">
-              🎯 TOTAL KESELURUHAN
-            </td>
-            <td class="py-4 px-6 text-right font-black text-xl">
-              {{ provinsiData.reduce((a,b)=>a+b.total,0) }}
+          <tr v-for="jenjang in ['Muda','Madya','Utama']" :key="jenjang"
+            class="group transition-all duration-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+            <td class="py-4 px-6 font-bold text-gray-700 group-hover:text-emerald-600 transition-colors">{{ jenjang }}</td>
+            <td v-for="tahun in [2026,2027,2028,2029,2030]" :key="tahun" class="py-4 px-6 text-center font-black text-emerald-700 group-hover:text-teal-600 transition-colors text-lg">
+              <NuxtLink :to="`/admin/prediksi-detail?jenjang=${jenjang}&tahun=${tahun}`" class="cursor-pointer hover:underline">{{ prediksi?.[jenjang]?.[tahun] || 0 }}</NuxtLink>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Modal Detail Prediksi -->
+    <div v-if="showDetailModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative">
+        <button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 bg-white/80 hover:bg-red-50 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110" @click="showDetailModal = false">✖</button>
+        <h2 class="text-2xl font-bold mb-4 text-emerald-700">Detail Prediksi Kenaikan {{ modalJenjang }} Tahun {{ modalTahun }}</h2>
+        <div v-if="loadingDetail" class="text-center py-8 text-gray-500">Loading...</div>
+        <div v-else>
+          <table class="min-w-full text-left border-collapse bg-white/80 rounded-xl overflow-hidden shadow-lg">
+            <thead>
+              <tr class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+                <th class="py-3 px-4 font-bold text-sm">Nama</th>
+                <th class="py-3 px-4 font-bold text-sm">NIP</th>
+                <th class="py-3 px-4 font-bold text-sm">Jenjang</th>
+                <th class="py-3 px-4 font-bold text-sm">Golongan</th>
+                <th class="py-3 px-4 font-bold text-sm">Instansi</th>
+                <th class="py-3 px-4 font-bold text-sm">TMT Pangkat</th>
+                <th class="py-3 px-4 font-bold text-sm">Pendidikan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in detailData" :key="row.nip">
+                <td class="py-2 px-4">{{ row.nama }}</td>
+                <td class="py-2 px-4">{{ row.nip }}</td>
+                <td class="py-2 px-4">{{ row.jenjang }}</td>
+                <td class="py-2 px-4">{{ row.golongan }}</td>
+                <td class="py-2 px-4">{{ row.instansi }}</td>
+                <td class="py-2 px-4">{{ row.tmt_pangkat }}</td>
+                <td class="py-2 px-4">{{ row.pendidikan }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="detailData.length === 0" class="text-center py-8 text-gray-500">Tidak ada data pegawai.</div>
+        </div>
+      </div>
     </div>
     </div>
     </div>
@@ -249,6 +266,12 @@ const growth = ref(8)
 const isGrowthUp = computed(() => growth.value >= 0)
 const totalAKAllProv = ref(0)
 const provinsiData = ref([])
+const prediksi = ref(null)
+const showDetailModal = ref(false)
+const modalJenjang = ref('')
+const modalTahun = ref('')
+const detailData = ref([])
+const loadingDetail = ref(false)
 
 // Dynamic age analysis
 const ageAnalysis = computed(() => {
@@ -292,7 +315,27 @@ onMounted(async () => {
     .sort((a, b) => b.total - a.total)
     .slice(0, 10)
   loading.value = false
+
+  const resPrediksi = await fetch('/api/analis_kebijakan/prediksi')
+  prediksi.value = await resPrediksi.json()
 })
+
+function openDetailModal(jenjang, tahun) {
+  showDetailModal.value = true
+  modalJenjang.value = jenjang
+  modalTahun.value = tahun
+  loadingDetail.value = true
+  fetch(`/api/analis_kebijakan/prediksi-detail?jenjang=${jenjang}&tahun=${tahun}`)
+    .then(res => res.json())
+    .then(data => {
+      detailData.value = data
+      loadingDetail.value = false
+    })
+    .catch(() => {
+      detailData.value = []
+      loadingDetail.value = false
+    })
+}
 
 // Chart options
 const barOptions = computed(() => ({

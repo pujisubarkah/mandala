@@ -28,21 +28,18 @@
             <span class="group-hover:text-blue-700 transition-colors duration-300 text-gray-700">{{ item.label }}</span>
           </div>
         </NuxtLink>
-        <div v-else-if="item.type === 'dropdown'" class="relative">
-          <button @click="toggleMenu(item.label)" class="group flex items-center gap-4 px-4 py-3 w-full rounded-xl transition-all duration-300 hover:bg-[#C2E7F6]/50 hover:shadow-sm border border-transparent hover:border-blue-200">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300"
+        <div v-else-if="item.type === 'dropdown'">
+          <div class="flex items-center gap-4 px-4 py-3 rounded-xl">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center"
               :class="item.icon === '👤' ? 'bg-gradient-to-br from-emerald-500 to-emerald-600' : item.icon === '📚' ? 'bg-gradient-to-br from-purple-500 to-purple-600' : 'bg-gradient-to-br from-orange-500 to-orange-600'">
               <span class="text-white text-lg">{{ item.icon }}</span>
             </div>
-            <span :class="[item.icon === '👤' ? 'group-hover:text-emerald-700' : item.icon === '📚' ? 'group-hover:text-purple-700' : 'group-hover:text-orange-700', 'transition-colors duration-300 flex-1 text-left text-gray-700']">{{ item.label }}</span>
-            <span :class="['transition-all duration-300', openMenu === item.label ? 'rotate-90 text-emerald-600' : 'rotate-0 text-gray-500']">▼</span>
-          </button>
-          <div v-if="openMenu === item.label" class="absolute left-full top-0 ml-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl py-2 z-[100] animate-fadeIn">
-            <NuxtLink v-for="child in item.children" :key="child.to" :to="child.to" class="group flex items-center gap-3 px-4 py-3 transition-all duration-200 hover:bg-emerald-50">
-              <div class="w-2 h-2 rounded-full group-hover:scale-150 transition-transform duration-200"
-                :class="item.icon === '👤' ? 'bg-emerald-500' : item.icon === '📚' ? 'bg-purple-500' : 'bg-orange-500'">
-              </div>
-              <span :class="[item.icon === '👤' ? 'group-hover:text-emerald-700' : item.icon === '📚' ? 'group-hover:text-purple-700' : 'group-hover:text-orange-700', 'text-sm text-gray-600']">{{ child.label }}</span>
+            <span :class="[item.icon === '👤' ? 'text-emerald-700' : item.icon === '📚' ? 'text-purple-700' : 'text-orange-700', 'flex-1 text-left text-gray-700']">{{ item.label }}</span>
+          </div>
+          <div class="ml-10 flex flex-col gap-1">
+            <NuxtLink v-for="child in item.children" :key="child.to" :to="child.to" class="px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-blue-50 flex items-center gap-2">
+              <span v-if="child.icon">{{ child.icon }}</span>
+              {{ child.label }}
             </NuxtLink>
           </div>
         </div>
@@ -92,9 +89,4 @@ const props = defineProps({
     required: true
   }
 });
-
-const openMenu = ref(null);
-function toggleMenu(menu) {
-  openMenu.value = openMenu.value === menu ? null : menu;
-}
 </script>

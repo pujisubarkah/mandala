@@ -9,9 +9,9 @@ export default function useSidebarMenu(role_id, username) {
         icon: '📝',
         type: 'dropdown',
         children: [
-          { label: 'Analis Kebijakan', to: `/${username}/form/analis-kebijakan` },
-          { label: 'Widyaiswara', to: `/${username}/form/widyaiswara` },
-          { label: 'Analis Bangkom', to: `/${username}/form/analis-bangkom` }
+          { label: 'Analis Kebijakan', to: `/${username}/form/analis-kebijakan`, icon: '👤' },
+          { label: 'Widyaiswara', to: `/${username}/form/widyaiswara`, icon: '📚' },
+          { label: 'Analis Bangkom', to: `/${username}/form/analis-bangkom`, icon: '📊' }
         ]
       }
     ];
@@ -29,8 +29,8 @@ export default function useSidebarMenu(role_id, username) {
         icon: '👤',
         type: 'dropdown',
         children: [
-          { label: 'Jumlah AK', to: '/admin/jumlah-ak' },
-          { label: 'Data Analytic', to: '/admin/analytic-ak' }
+          { label: 'Jumlah AK', to: '/admin/jumlah-ak', icon: '📋' },
+          { label: 'Data Analytic', to: '/admin/analytic-ak', icon: '📈' }
         ]
       },
       {
@@ -38,8 +38,8 @@ export default function useSidebarMenu(role_id, username) {
         icon: '📚',
         type: 'dropdown',
         children: [
-          { label: 'Jumlah', to: '/admin/widyaiswara' },
-          { label: 'Data Analytic', to: '/admin/analytic-wi' }
+          { label: 'Jumlah', to: '/admin/widyaiswara', icon: '📋' },
+          { label: 'Data Analytic', to: '/admin/analytic-wi', icon: '📈' }
         ]
       },
       {
@@ -47,8 +47,8 @@ export default function useSidebarMenu(role_id, username) {
         icon: '📊',
         type: 'dropdown',
         children: [
-          { label: 'Jumlah', to: '/admin/jumlah-ab' },
-          { label: 'Data Analytic', to: '/admin/analytic-ab' }
+          { label: 'Jumlah', to: '/admin/jumlah-ab', icon: '📋' },
+          { label: 'Data Analytic', to: '/admin/analytic-ab', icon: '📈' }
         ]
       },
       {
