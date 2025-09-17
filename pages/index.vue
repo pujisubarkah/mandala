@@ -9,7 +9,7 @@
 
         <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-4">
           Selamat Datang di
-          <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">daTAMANDALA</span>
+          <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">daTaJFMakarti</span>
         </h1>
 
         <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">

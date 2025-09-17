@@ -11,7 +11,7 @@
         <img src="/berakhlak.png" alt="BerAKHLAK" class="h-8 w-auto object-contain" style="background:transparent;" />
         <img src="/bangga.png" alt="Bangga Melayani Bangsa" class="h-8 w-auto object-contain" style="background:transparent;" />
         <div class="flex flex-col">
-          <span class="text-xl font-extrabold text-blue-700 tracking-tight">daTAMandala</span>
+          <span class="text-xl font-extrabold text-blue-700 tracking-tight">daTaJFMakarti</span>
           <span class="text-xs text-blue-500 font-medium -mt-1">Sistem Platform NIAKN</span>
         </div>
       </div>

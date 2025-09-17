@@ -11,7 +11,7 @@
           <span class="text-2xl font-black text-white">🗂️</span>
         </div>
         <div>
-          <h1 class="text-2xl font-extrabold text-blue-700 tracking-tight">daTAMandala</h1>
+          <h1 class="text-2xl font-extrabold text-blue-700 tracking-tight">daTaJFMakarti</h1>
           <p class="text-xs text-blue-500 font-medium tracking-wider">Sistem Platform NIAKN</p>
         </div>
       </div>

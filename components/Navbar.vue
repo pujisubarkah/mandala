@@ -12,7 +12,7 @@
             <img src="/bangga.png" alt="Bangga Melayani Bangsa" class="h-10 w-auto object-contain" />
             
           </div>
-          <span class="text-xl font-extrabold text-blue-700 tracking-tight">daTAMANDALA</span>
+          <span class="text-xl font-extrabold text-blue-700 tracking-tight">daTaJFMakarti</span>
         </div>
 
         <!-- 🔹 KANAN: Menu Navigasi (Desktop) - Rata Kanan -->
